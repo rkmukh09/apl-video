@@ -25,4 +25,5 @@ ffmpeg -i video_noaudio.mp4 -i sfx.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a
 - Padel court dimensions: v1 rendered (look A). Storyboard reordered: space, concrete slab, court.
 - Padel court cost: storyboard only.
 - How a padel court gets built: storyboard only.
+- Padel court maintenance and the Wema PadelPro: storyboard only (needs Wema demo footage).
 - Design is open: A (website), B (Instagram, Inter), C (Instagram, Figtree). Decide on the first finished video.
