@@ -1,0 +1,4 @@
+out/
+*.tmp.mp4
+seg*.mp4
+__pycache__/
