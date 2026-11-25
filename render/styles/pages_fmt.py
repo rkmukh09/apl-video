@@ -6,9 +6,9 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FMTS={
  # safe = (x0,y0,x1,y1) where text may go; text: where the caption block sits
- 'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=870, cb=1650,cx=512, fw=215,nw=480,text='top'),
- 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=400, cb=860, cx=540, fw=170,nw=380,text='bottom'),
- 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=250, ct=280, cb=630, cx=540, fw=130,nw=290,text='bottom'),
+ 'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=760, ct=960, cb=1640,cx=540, fw=210,nw=470,text='top'),
+ 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=430, cb=1000,cx=540, fw=190,nw=430,text='bottom'),
+ 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=310, ct=390, cb=770, cx=540, fw=140,nw=320,text='bottom'),
  'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=455, cb=1000,cx=1340,fw=200,nw=470,text='left'),
 }
 FMT=os.environ.get('FMT','reel'); C=FMTS[FMT]; W,H=C['W'],C['H']
@@ -227,7 +227,8 @@ def pg_orient():
     def ex(img,d):
         r=60*SC
         if FMT=='wide': cx,cy=C['safe'][0]+640+110,H*0.5
-        elif FMT=='reel': cx,cy=C['safe'][0]+r+20,1080   # beside the court, inside the Reels safe zone
+        elif FMT=='reel': cx,cy=C['safe'][0]+r+20,1080
+        elif FMT=='square': cx,cy=C['safe'][0]+r+60,560   # beside the court, inside the Reels safe zone
         else: cb=P([(0,COURT[1]/2+4.5)])[0][1]; cx=C['cx']; cy=cb+r+40*SC
         d.ellipse((cx-r,cy-r,cx+r,cy+r),outline=(255,255,255,255),width=4)
         a0=P([(0,l/2)])[0]; a1=P([(0,-l/2)])[0]; v=(a1-a0)/np.linalg.norm(a1-a0); n=np.array([-v[1],v[0]])
