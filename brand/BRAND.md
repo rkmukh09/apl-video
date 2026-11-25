@@ -22,5 +22,8 @@ Sources: americanpadellabs.com (Nov 2026) and instagram.com/americanpadellabs (v
 - Never show the sand grade. Don't present partner (FSC, Padel Box) projects as APL builds.
 - Vertical 1080 x 1920 first; 16:9 for YouTube on request.
 
+## Font
+- Figtree for all video text (headlines, numbers, captions). Weights: 800 headlines/numbers, 700 captions, 500-600 sub-lines. Bebas Neue and Inter are kept only for reference.
+
 ## Status
-- Design is open: options A (website navy + Bebas), B (Instagram footage + Inter), C (Instagram footage + Figtree). Decide on the first finished video.
+- Font decided: Figtree. Layout/color still open: website navy (A) or Instagram footage look (C). Decide on the first finished video.

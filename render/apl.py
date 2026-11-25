@@ -10,8 +10,8 @@ COURT=(52,88,135)
 WHITE=(255,255,255)
 SLATE=(166,178,201)    # hsl(220 20% 70%)
 GLASS=(150,190,230)
-BEB=B('fonts','bebas-neue-latin-400-normal.woff')
-INT=B('fonts','inter-latin-%d-normal.woff')  # swap to figtree-latin-%d-normal.woff for style C
+BEB=B('fonts','figtree-latin-800-normal.woff')  # Figtree for all video text (Raj, Nov 24 2026)
+INT=B('fonts','figtree-latin-%d-normal.woff')
 _fc={}
 def F(kind,size,w=600):
     k=(kind,size,w)
@@ -37,6 +37,10 @@ def bg():
     a[::120,:,:]+=4; a[:,::120,:]+=4
     return np.clip(a,0,255).astype(np.uint8)
 BG=bg()
+
+def fit(kind,size,s,maxw=980,w=600):
+    while size>20 and F(kind,size,w).getbbox(s)[2]>maxw: size-=2
+    return F(kind,size,w)
 
 def text(img,s,xy,font,fill=WHITE,anchor='la',alpha=1.0,dy=0):
     if alpha<=0: return
@@ -99,7 +103,7 @@ FL,FR,FT,FB=CX-10.97/2*PX,CX+10.97/2*PX,CY-21.03/2*PX,CY+21.03/2*PX
 
 def heading(img,s,sub,t0,t,y=215):
     p=eout(prog(t,t0,t0+0.5))
-    text(img,s,(W//2,y),F('b',112),anchor='mm',alpha=p,dy=(1-p)*30)
+    text(img,s,(W//2,y),fit('b',104,s),anchor='mm',alpha=p,dy=(1-p)*30)
     if sub: 
         p2=eout(prog(t,t0+0.25,t0+0.75))
         text(img,sub,(W//2,y+80),F('i',38,500),fill=SLATE,anchor='mm',alpha=p2,dy=(1-p2)*20)
@@ -108,8 +112,8 @@ def caption(img,lines,t0,t,y=1700,alpha=1.0):
     for i,(s,big) in enumerate(lines):
         p=eout(prog(t,t0+i*0.25,t0+i*0.25+0.5))*alpha
         if big:
-            sz=96
-            while F('b',sz).getbbox(s)[2]>1000: sz-=4
+            sz=84
+            while F('b',sz).getbbox(s)[2]>980: sz-=4
             text(img,s,(W//2,y+i*90),F('b',sz),anchor='mm',alpha=p,dy=(1-p)*25)
         else:
             sz=40
@@ -159,7 +163,7 @@ def frame(t):
             p=eout(prog(t,0.3,0.9)); 
             for i,s in enumerate(["HOW MUCH SPACE","DOES A PADEL COURT","ACTUALLY NEED?"]):
                 pp=eout(prog(t,0.3+i*0.2,0.9+i*0.2))
-                text(img,s,(W//2,330+i*125),F('b',136),anchor='mm',alpha=pp*al,dy=(1-pp)*40)
+                text(img,s,(W//2,330+i*125),fit('b',112,"DOES A PADEL COURT"),anchor='mm',alpha=pp*al,dy=(1-pp)*40)
             pp=eout(prog(t,1.4,2.0))
             text(img,"Padel court dimensions, explained",(W//2,1780),F('i',44,600),anchor='mm',alpha=pp*al)
         post.append(p1)
@@ -311,7 +315,7 @@ def frame(t):
             p=eout(prog(t,40.2,40.9))
             lg.putalpha(lg.getchannel('A').point(lambda v:int(v*p)))
             img.alpha_composite(lg,(W//2-lg.width//2,330+int((1-p)*30)))
-            for i,(s,f,c) in enumerate([("WILL A COURT FIT YOUR PROPERTY?",F('b',84),WHITE),("Free court-fit assessment",F('i',46,600),SLATE),("AMERICANPADELLABS.COM",F('b',78),WHITE)]):
+            for i,(s,f,c) in enumerate([("WILL A COURT FIT YOUR PROPERTY?",fit('b',76,"WILL A COURT FIT YOUR PROPERTY?"),WHITE),("Free court-fit assessment",F('i',46,600),SLATE),("AMERICANPADELLABS.COM",fit('b',70,"AMERICANPADELLABS.COM"),WHITE)]):
                 pp=eout(prog(t,41.0+i*0.35,41.6+i*0.35))
                 text(img,s,(W//2,960+i*130),f,fill=c,anchor='mm',alpha=pp,dy=(1-pp)*25)
         post.append(p5)

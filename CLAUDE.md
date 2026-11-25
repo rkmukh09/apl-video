@@ -6,3 +6,4 @@
 - Storyboard in the Google Doc is the source of truth; keep storyboards/<slug>.json in sync with it.
 - Show a few full-size frames before any full render. One encoded file per scene, joined with the concat demuxer.
 - Raj's writing style: sentence case, plain language, no em dashes.
+- Use Figtree for all video text.
