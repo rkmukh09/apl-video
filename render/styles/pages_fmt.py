@@ -7,8 +7,8 @@ ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FMTS={
  # safe = (x0,y0,x1,y1) where text may go; text: where the caption block sits
  'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=870, cb=1650,cx=512, fw=215,nw=480,text='top'),
- 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=400, cb=880, cx=540, fw=170,nw=400,text='bottom'),
- 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=270, ct=345, cb=690, cx=540, fw=130,nw=300,text='bottom'),
+ 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=400, cb=860, cx=540, fw=170,nw=380,text='bottom'),
+ 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=250, ct=280, cb=630, cx=540, fw=130,nw=290,text='bottom'),
  'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=455, cb=1000,cx=1340,fw=200,nw=470,text='left'),
 }
 FMT=os.environ.get('FMT','reel'); C=FMTS[FMT]; W,H=C['W'],C['H']
@@ -68,21 +68,14 @@ def scene():
     for k in range(4):
         x=W*(0.22+0.19*k); fillpoly(a,[(x+30*s*math.cos(u),gy-8-18*s*abs(math.sin(u))) for u in np.linspace(0,math.pi,20)],(76,118,80),0.05,70+k)
     return a
-# True 3D camera (3/4 view so the enclosure reads), fitted into each format's court box.
-AZ=math.radians(float(os.environ.get('CAM_AZ','0'))); EL=math.radians(float(os.environ.get('CAM_EL','30'))); DIST=170.0
-_cp=np.array([DIST*math.cos(EL)*math.sin(AZ),DIST*math.cos(EL)*math.cos(AZ),DIST*math.sin(EL)])
-_cf=-_cp/np.linalg.norm(_cp); _r=np.cross(_cf,[0,0,1.0]); _r/=np.linalg.norm(_r); _u=np.cross(_r,_cf)
-def _raw(p):
-    v=np.array(p,float)-_cp; z=v@_cf; return np.array([(v@_r)/z,-(v@_u)/z])
-_fitpts=[(x,y,0) for x in (-24,24) for y in (-40.5,40.5)]+[(x,y,13+1/12) for x in (-COURT[0]/2,COURT[0]/2) for y in (-COURT[1]/2,COURT[1]/2)]
-_rp=np.array([_raw(p) for p in _fitpts]); _mn=_rp.min(0); _mx=_rp.max(0)
-_bx0,_bx1=C['cx']-C['nw'],C['cx']+C['nw']; _by0,_by1=C['ct']-0.05*H,C['cb']
-_sc=min((_bx1-_bx0)/(_mx[0]-_mn[0]),(_by1-_by0)/(_mx[1]-_mn[1]))
-_off=np.array([(_bx0+_bx1)/2,(_by0+_by1)/2])-_sc*(_mn+_mx)/2
-def proj(x,y,z=0.0): return _off+_sc*_raw((x,y,z))
-def P(pts): return np.float32([proj(p[0],p[1],0) for p in pts])
+SRC=np.float32([[-24,-40.5],[24,-40.5],[24,40.5],[-24,40.5]])
+DST=np.float32([[C['cx']-C['fw'],C['ct']],[C['cx']+C['fw'],C['ct']],[C['cx']+C['nw'],C['cb']],[C['cx']-C['nw'],C['cb']]])
+Hm=cv2.getPerspectiveTransform(SRC,DST)
+AZ=0.0
+def P(pts): return cv2.perspectiveTransform(np.float32(pts)[None],Hm)[0]
 def R(w,l): return P([(-w/2,-l/2),(w/2,-l/2),(w/2,l/2),(-w/2,l/2)])
-def up(x,y,h): q=proj(x,y,h); return (float(q[0]),float(q[1]))
+def ppf(x,y): p=P([(x-0.5,y),(x+0.5,y)]); return float(np.linalg.norm(p[1]-p[0]))
+def up(x,y,h): b=P([(x,y)])[0]; return (float(b[0]),float(b[1]-h*ppf(x,y)))
 def fillR(a,poly,col,al):
     m=np.zeros((H,W),np.uint8); cv2.fillPoly(m,[np.int32(poly)],255,cv2.LINE_AA); mm=(m/255.0*al)[...,None]; return a*(1-mm)+np.array(col)*mm
 def court(a,pad=True,clear=False):
@@ -141,8 +134,7 @@ def walls(a):
             post(x,-yo,G,3); beam((x,-yo),(x,0),2.2*M,2)
             for yy in np.linspace(ystart,-yo,4)[1:-1]: post(x,yy,G,2)
             beam((x,ystart),(x,0),G,2)
-    farx=-hw if math.sin(AZ)>=0 else hw
-    back(-hl); side(farx,1); side(-farx,-1); back(hl)
+    back(-hl); side(-hw,1); side(hw,-1); back(hl)
     return a
 def finish(a):
     a=a*(1+0.045*STREAK[...,None]); sp=(STIP<0.035)[...,None]; a=np.where(sp,a*0.86+255*0.14,a)
@@ -219,16 +211,16 @@ def pg_total():
     return page(a,"Total space you need","About 48' x 81'","Leave about 6' around the pad for machinery and easy access in and out",ex)
 def pg_steel():
     def ex(img,d):
-        x,y=max([(sx*w/2,sy*l/2) for sx in (-1,1) for sy in (-1,1)],key=lambda c:P([c])[0][1]); b=P([(x,y)])[0]; t=up(x,y,13+1/12); dx=40*SC
+        x,y=w/2,l/2; b=P([(x,y)])[0]; t=up(x,y,13+1/12); dx=40*SC
         d.line((b[0]+dx,b[1],t[0]+dx,t[1]),fill=(255,255,255,255),width=5)
         for p in (b,t): d.line((p[0]+dx-16,p[1],p[0]+dx+16,p[1]),fill=(255,255,255,255),width=5)
         stxt(d,"13'1\"",(t[0]+dx+18,(b[1]+t[1])/2),F(int(58*SC)),anchor='lm')
     return page(walls(court(scene())),"Tallest steel member: 13'1\"","Glass and mesh walls on a steel frame",None,ex)
 def pg_setback():
-    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=-(ACC[0]/2+17)
+    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=ACC[0]/2+17
     dashed(a,P([(xl,-ACC[1]/2),(xl,ACC[1]/2)]),closed=False,col=(255,236,150),seg=18,th=5)
     def ex(img,d):
-        p0=P([(-ACC[0]/2,-8)])[0]; p1=P([(xl,-8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
+        p0=P([(ACC[0]/2,-8)])[0]; p1=P([(xl,-8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
         pp=P([(xl,-ACC[1]/2)])[0]; lbl(d,"property line",(min(max(pp[0],C['safe'][0]+110*SC),W-120*SC),pp[1]-30*SC),28)
     return page(a,"Tips before you build","1. Check your town’s setback rules","This decides where on your property a court can go",ex)
 def pg_orient():
@@ -256,9 +248,9 @@ def pg_lights():
         b=P([(x,y)])[0]; t=up(x,y,20); cv2.line(a,(int(b[0]),int(b[1])),(int(t[0]),int(t[1])),(52,56,64),5,cv2.LINE_AA)
         g=np.zeros((H,W),np.float32); cv2.circle(g,(int(t[0]),int(t[1])),int(36*SC)+4,1,-1); g=cv2.GaussianBlur(g,(0,0),16)[...,None]
         a[:]=a*(1-g*0.7)+np.array((255,245,210))*g*0.7
-    ub=P([(-(PAD[0]/2+(6 if FMT=='reel' else 12)),l/2-14)])[0]; s=SC
+    ub=P([(PAD[0]/2+(6 if FMT=='reel' else 12),l/2-14)])[0]; s=SC
     cv2.rectangle(a,(int(ub[0]-26*s),int(ub[1]-44*s)),(int(ub[0]+26*s),int(ub[1])),(170,170,165),-1); cv2.rectangle(a,(int(ub[0]-26*s),int(ub[1]-44*s)),(int(ub[0]+26*s),int(ub[1])),(90,90,90),3)
-    pl=P([poles[2]])[0]; dashed(a,[(ub[0]-26*s,ub[1]-10),(pl[0],pl[1])],closed=False,col=(255,236,150),seg=14,th=4)
+    pl=P([poles[3]])[0]; dashed(a,[(ub[0]-26*s,ub[1]-10),(pl[0],pl[1])],closed=False,col=(255,236,150),seg=14,th=4)
     def ex(img,d): lbl(d,"utility box",(ub[0],ub[1]+28*SC),28)
     return page(a,"Tips before you build","3. Want lights?","Plan access to your utility box",ex)
 def pg_cta1(): return page(walls(court(scene())),"Permit rules vary by city or county","We plan this early to avoid costly redesigns")
