@@ -31,5 +31,6 @@ Sources: americanpadellabs.com (Nov 2026) and instagram.com/americanpadellabs (v
 ## Style samples (Nov 24, 2026, for comparison; not yet chosen)
 - render/styles/watercolor.py: watercolor field journal, washes bleed in on paper, hand-inked lines. Figtree.
 - render/styles/luxury.py: quiet luxury, off-white and stone, Figtree light, slow push-in, lots of empty space.
+- render/styles/clean3d.py: clean 3D render, minimal court rotates while parts get labeled (turf, sand infill, glass, mesh, lights). Figtree.
 - Vox paper-collage style tried and dropped (Raj, Nov 24).
 - No "American Padel Labs" text at the top of frames (Raj, Nov 24).
