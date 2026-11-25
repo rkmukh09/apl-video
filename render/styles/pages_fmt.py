@@ -229,6 +229,7 @@ def pg_orient():
     def ex(img,d):
         r=60*SC
         if FMT=='wide': cx,cy=C['safe'][0]+640+110,H*0.5
+        elif FMT=='reel': cx,cy=C['safe'][0]+r+20,1080   # beside the court, inside the Reels safe zone
         else: cb=P([(0,COURT[1]/2+4.5)])[0][1]; cx=C['cx']; cy=cb+r+40*SC
         d.ellipse((cx-r,cy-r,cx+r,cy+r),outline=(255,255,255,255),width=4)
         d.polygon([(cx,cy-r+8),(cx-16,cy),(cx+16,cy)],fill=TERRA+(255,)); d.polygon([(cx,cy+r-8),(cx-16,cy),(cx+16,cy)],fill=(255,255,255,255))
