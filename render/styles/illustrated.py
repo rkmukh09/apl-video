@@ -3,7 +3,7 @@
 from common import *
 N=270
 import os
-COURT_COL=tuple(int(v) for v in os.environ.get("COURT_COL","62,112,168").split(","))
+COURT_COL=tuple(int(v) for v in os.environ.get("COURT_COL","184,92,62").split(","))
 rng=np.random.default_rng(21)
 F=lambda sz,w=800: font(f'figtree-latin-{w}-normal',sz)
 _LF={}

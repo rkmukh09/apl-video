@@ -53,10 +53,11 @@ a=cv2.GaussianBlur(a,(0,0),0.7)+IL.GRAIN[...,None]*8
 img=Image.fromarray(np.clip(a,0,255).astype(np.uint8)).convert('RGBA'); d=ImageDraw.Draw(img,'RGBA')
 def txt(s,xy,f,anchor='mm',col=(255,255,255)):
     x,y=xy; d.text((x+3,y+4),s,font=f,fill=(40,50,30,120),anchor=anchor); d.text(xy,s,font=f,fill=col+(255,),anchor=anchor)
-txt("The space you need",(W//2,170),F(76))
-txt("court  32'10\" x 65'7\"",(CX,CY-200),F(38,800))
-txt("concrete pad  36' x 69'",(CX,int((P[3]+A[3])/2)+6),F(30,800))
-for xx in (CX-150,CX+150): d.line((xx,int(P[3])-2,xx,int((P[3]+A[3])/2)-12),fill=(255,255,255,230),width=3)
-txt("+ 6' clear all around",(CX,int(A[1])-32),F(36,800))
-txt("48' x 81' total",(W//2,1660),F(84))
+if not os.environ.get('NOLABELS'):
+    txt("The space you need",(W//2,170),F(76))
+    txt("court  32'10\" x 65'7\"",(CX,CY-200),F(38,800))
+    txt("concrete pad  36' x 69'",(CX,int((P[3]+A[3])/2)+6),F(30,800))
+    for xx in (CX-150,CX+150): d.line((xx,int(P[3])-2,xx,int((P[3]+A[3])/2)-12),fill=(255,255,255,230),width=3)
+    txt("+ 6' clear all around",(CX,int(A[1])-32),F(36,800))
+    txt("48' x 81' total",(W//2,1660),F(84))
 img.convert('RGB').save(os.environ.get('OUT','/home/claude/video/illustrated_overhead.jpg'),quality=92)
