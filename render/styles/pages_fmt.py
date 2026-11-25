@@ -181,7 +181,7 @@ def textblock(d,title,big,small,top=0):
     elif C['text']=='bottom':
         stack(ttl,y0+10+top)
         hb=sum(f.size*1.25 for _,f in bg)+sum(f.size*1.25 for _,f in sl)+6
-        y=stack(bg,y1-hb-int(110*SC)); stack(sl,y+6)
+        y=stack(bg,y1-hb); stack(sl,y+6)
     else:
         tot=sum(f.size*1.25 for _,f in ttl+bg+sl)+60
         y=stack(ttl,max(y0+top,(y0+y1)/2-tot/2)); y=stack(bg,y+40); stack(sl,y+6)
@@ -189,7 +189,8 @@ def page(a,title,big,small=None,extra=None,top=0):
     img=Image.fromarray(finish(a)).convert('RGBA'); d=ImageDraw.Draw(img,'RGBA')
     if extra: extra(img,d)
     textblock(d,title,big,small,top)
-    x0,y0,x1,y1=C['safe']; h=int(100*SC) if FMT!='wide' else 90
+    if FMT!='wide': return img   # watermark on YouTube only (Raj, Nov 24)
+    x0,y0,x1,y1=C['safe']; h=90
     lg=LOGO.resize((int(LOGO.width*h/LOGO.height),h),Image.LANCZOS); al=lg.getchannel('A').point(lambda v:int(v*0.85)); lg.putalpha(al)
     img.alpha_composite(lg,(int(x1-lg.width),int(y1-lg.height)))
     return img
@@ -210,7 +211,7 @@ def pg_total():
     a=walls(court(scene(),clear=True)); dashed(a,R(*ACC))
     def ex(img,d):
         for p in [((ACC[0]+PAD[0])/4,0),(-(ACC[0]+PAD[0])/4,0),(0,-(ACC[1]+PAD[1])/4),(0,(ACC[1]+PAD[1])/4)]: lbl(d,"6'",tuple(P([p])[0]),36)
-    return page(a,"Total space you need","48' x 81'","Plus around 6' around the pad, for machinery and easy access in and out",ex)
+    return page(a,"Total space you need","About 48' x 81'","Leave about 6' around the pad for machinery and easy access in and out",ex)
 def pg_steel():
     def ex(img,d):
         x,y=w/2,l/2; b=P([(x,y)])[0]; t=up(x,y,13+1/12); dx=50*SC
