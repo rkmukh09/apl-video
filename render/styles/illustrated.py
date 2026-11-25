@@ -4,7 +4,12 @@ from common import *
 N=270
 rng=np.random.default_rng(21)
 F=lambda sz,w=800: font(f'figtree-latin-{w}-normal',sz)
+_LF={}
 def lf(h,w,sig,seed):
+    k=(h,w,sig,seed)
+    if k in _LF: return _LF[k]
+    _LF[k]=_lf(h,w,sig,seed); return _LF[k]
+def _lf(h,w,sig,seed):
     r=np.random.default_rng(seed); n=r.normal(0,1,(h//4+1,w//4+1)).astype(np.float32); n=cv2.GaussianBlur(n,(0,0),sig)
     n=(n-n.mean())/(n.std()+1e-6); return cv2.resize(n,(w,h))
 GRAIN=rng.normal(0,1,(H,W)).astype(np.float32)
@@ -18,18 +23,18 @@ def fillpoly(a,pts,col,tex=0.06,seed=0):
 def hill(y0,amp,freq,ph,col,seed,x0=-50,x1=W+50):
     xs=np.linspace(x0,x1,120); ys=y0-amp*(0.6*np.sin(xs*freq+ph)+0.4*np.sin(xs*freq*2.3+ph*1.7))
     pts=list(zip(xs,ys))+[(x1,H),(x0,H)]; return pts
-def cypress(a,x,yb,h,w,col,seed=50):
-    pts=[(x,yb-h)]+[(x+w*math.sin(t)*(0.55+0.45*t/math.pi),yb-h+h*t/math.pi) for t in np.linspace(0.15,math.pi,30)]
-    pts+= [(x-w*math.sin(t)*(0.55+0.45*t/math.pi),yb-h+h*t/math.pi) for t in np.linspace(math.pi,0.15,30)]
+def cypress(a,x,yb,h,w,col,seed=50,sway=0.0):
+    pts=[(x+sway,yb-h)]+[(x+sway*(1-t/math.pi)+w*math.sin(t)*(0.55+0.45*t/math.pi),yb-h+h*t/math.pi) for t in np.linspace(0.15,math.pi,30)]
+    pts+= [(x+sway*(1-t/math.pi)-w*math.sin(t)*(0.55+0.45*t/math.pi),yb-h+h*t/math.pi) for t in np.linspace(math.pi,0.15,30)]
     fillpoly(a,pts,col,0.08,seed)
-def scene(dx):
+def scene(dx,t=0):
     a=np.zeros((H,W,3),np.float32)
     y=np.linspace(0,1,H)[:,None,None]
-    sky=np.array((236,140,128),np.float32)*(1-y*1.7).clip(0,1)+np.array((252,204,140),np.float32)*(y*1.7).clip(0,1)
+    sky=np.array((226,98,118),np.float32)*(1-y*1.7).clip(0,1)+np.array((255,192,112),np.float32)*(y*1.7).clip(0,1)
     a[:]=sky
     # sun glow
     yy,xx=np.mgrid[0:H,0:W]; d=np.hypot(xx-540,yy-720)
-    a+= (np.exp(-(d/260)**2)*60)[...,None]*np.array([1,0.85,0.5])
+    a+= (np.exp(-(d/260)**2)*(55+10*math.sin(t/30*2)))[...,None]*np.array([1,0.85,0.5])
     sun=(d<78).astype(np.float32); a=a*(1-sun[...,None])+np.array((255,236,190))*sun[...,None]
     # clouds: soft stippled blobs drifting
     for k,(cx,cy,sx,sy) in enumerate([(220,330,260,70),(860,240,230,60),(640,470,300,55)]):
@@ -37,8 +42,8 @@ def scene(dx):
         g=np.exp(-(((xx-cxk)/sx)**2+((yy-cy)/sy)**2))+0.35*lf(H,W,4,40+k)*np.exp(-(((xx-cxk)/(sx*1.3))**2+((yy-cy)/(sy*1.6))**2))
         al=np.clip((g-0.35)*3,0,1); al=np.where(STIP<al*1.15,1.0,al*0.5)*(g>0.15)
         a=a*(1-al[...,None]*0.85)+np.array((255,240,228))*al[...,None]*0.85
-    fillpoly(a,hill(760,70,0.006,1.0+dx*0.0004,(0,0,0),1),(214,132,140),0.06,11)     # far mauve ridge
-    fillpoly(a,hill(820,45,0.009,2.2+dx*0.0008,(0,0,0),2),(150,150,128),0.07,12)     # sage hills
+    fillpoly(a,hill(760,70,0.006,1.0+dx*0.0004,(0,0,0),1),(222,112,128),0.06,11)     # far mauve ridge
+    fillpoly(a,hill(820,45,0.009,2.2+dx*0.0008,(0,0,0),2),(120,152,124),0.07,12)     # sage hills
     # little house on the left hill (original drawing)
     hx=150+dx*0.9; fillpoly(a,[(hx,790),(hx+120,790),(hx+120,860),(hx,860)],(246,226,200),0.04,13)
     fillpoly(a,[(hx-12,792),(hx+60,745),(hx+132,792)],(204,108,84),0.06,14)
@@ -48,9 +53,14 @@ def scene(dx):
     for k in range(-8,9):
         x_far=540+k*70; x_near=540+k*260
         fillpoly(a,[(x_far,880),(x_far+35,880),(x_near+130,H),(x_near,H)],(106,150,98),0.02,30+k)
-    for k,(x,h) in enumerate(((60,300),(990,340),(1050,260),(30,220))): cypress(a,x+dx*1.1,900,h,34,(46,88,70),50+k)
+    for k,(x,h) in enumerate(((60,300),(990,340),(1050,260),(30,220))): cypress(a,x+dx*1.1,900,h,34,(46,88,70),50+k,6*math.sin(t/30*1.6+k))
     for k,x in enumerate((240,420,640,860)):
         yy0=872; fillpoly(a,[(x+dx+30*math.cos(u),yy0-18*abs(math.sin(u))) for u in np.linspace(0,math.pi,20)]+[(x+dx-30,yy0)],(76,118,80),0.05,70+k)
+    # birds crossing the sky, flapping
+    for k in range(5):
+        bx=(-80+(t*2.2+k*57)%1300); by=380+k*22+8*math.sin(t/9+k); f=1 if (t//4+k)%2 else 0
+        span=14; dy=-8 if f else 4
+        cv2.polylines(a,[np.int32([(bx-span,by+dy),(bx,by),(bx+span,by+dy)])],False,(110,60,70),3,cv2.LINE_AA)
     return a
 # ground homography: plan feet (x across, y along; access zone 48 x 81) -> screen trapezoid
 SRC=np.float32([[-24,-40.5],[24,-40.5],[24,40.5],[-24,40.5]])
@@ -60,7 +70,7 @@ def P(pts): return cv2.perspectiveTransform(np.float32(pts)[None],Hm)[0]
 def R(w,l): return P([(-w/2,-l/2),(w/2,-l/2),(w/2,l/2),(-w/2,l/2)])
 def frame(i):
     t=i; dx=-30+60*(t/N)
-    a=scene(dx)
+    a=scene(dx,t)
     ca=ss(prog(t,20,50)); pa=ss(prog(t,70,100)); aa=ss(prog(t,120,150))
     if aa>0:
         m=np.zeros((H,W),np.uint8); cv2.fillPoly(m,[np.int32(R(*ACC))],255,cv2.LINE_AA)
@@ -100,7 +110,7 @@ def frame(i):
     al=ss(prog(t,175,200))
     txt("48' x 81' total",(W//2,1755),F(84),al)
     txt("Room for machinery and getting in and out",(W//2,1835),F(34,600),al)
-    return np.array(img.convert('RGB'))
+    return zoom(np.array(img.convert('RGB')),1.0+0.04*ss(t/N),0.5,0.55)
 if __name__=='__main__':
     import sys
     if len(sys.argv)>1 and sys.argv[1]=='still':

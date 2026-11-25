@@ -38,3 +38,4 @@ Sources: americanpadellabs.com (Nov 2026) and instagram.com/americanpadellabs (v
 - render/styles/illustrated.py: grainy illustrated landscape (sunset sky, layered hills, cypress, brush texture), court plan on a backyard lawn. Inspired by the look of Raj's reference cards, original artwork, no logos.
 - Chosen for the dimensions video: clean 3D (render/styles/dims3d.py), Nov 24.
 - No "American Padel Labs" text at the top of frames (Raj, Nov 24).
+- Motion notes from Raj's three reference loops (Nov 24): short living loops (3 to 6 s), slow push-in, gentle parallax, small ambient motion (birds, drifting clouds, swaying trees, sun glow), saturated sunset palette, visible brush grain. Applied to illustrated.py.
