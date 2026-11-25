@@ -6,10 +6,10 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FMTS={
  # safe = (x0,y0,x1,y1) where text may go; text: where the caption block sits
- 'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=880, cb=1700,cx=512, fw=215,nw=470,text='top'),
- 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=420, cb=1080,cx=540, fw=170,nw=470,text='bottom'),
- 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=250, ct=290, cb=820, cx=540, fw=130,nw=440,text='bottom'),
- 'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=450, cb=1030,cx=1330,fw=200,nw=560,text='left'),
+ 'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=870, cb=1650,cx=512, fw=215,nw=480,text='top'),
+ 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=400, cb=880, cx=540, fw=170,nw=400,text='bottom'),
+ 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=270, ct=345, cb=690, cx=540, fw=130,nw=300,text='bottom'),
+ 'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=455, cb=1000,cx=1340,fw=200,nw=470,text='left'),
 }
 FMT=os.environ.get('FMT','reel'); C=FMTS[FMT]; W,H=C['W'],C['H']
 FT=dict(COURT=(32+10/12,65+7/12),PAD=(36.0,69.0),ACC=(48.0,81.0)); SV=22+10/12
@@ -69,7 +69,7 @@ def scene():
         x=W*(0.22+0.19*k); fillpoly(a,[(x+30*s*math.cos(u),gy-8-18*s*abs(math.sin(u))) for u in np.linspace(0,math.pi,20)],(76,118,80),0.05,70+k)
     return a
 # True 3D camera (3/4 view so the enclosure reads), fitted into each format's court box.
-AZ=math.radians(float(os.environ.get('CAM_AZ','28'))); EL=math.radians(float(os.environ.get('CAM_EL','30'))); DIST=170.0
+AZ=math.radians(float(os.environ.get('CAM_AZ','0'))); EL=math.radians(float(os.environ.get('CAM_EL','30'))); DIST=170.0
 _cp=np.array([DIST*math.cos(EL)*math.sin(AZ),DIST*math.cos(EL)*math.cos(AZ),DIST*math.sin(EL)])
 _cf=-_cp/np.linalg.norm(_cp); _r=np.cross(_cf,[0,0,1.0]); _r/=np.linalg.norm(_r); _u=np.cross(_r,_cf)
 def _raw(p):
@@ -141,7 +141,7 @@ def walls(a):
             post(x,-yo,G,3); beam((x,-yo),(x,0),2.2*M,2)
             for yy in np.linspace(ystart,-yo,4)[1:-1]: post(x,yy,G,2)
             beam((x,ystart),(x,0),G,2)
-    farx=-hw if math.sin(AZ)>0 else hw
+    farx=-hw if math.sin(AZ)>=0 else hw
     back(-hl); side(farx,1); side(-farx,-1); back(hl)
     return a
 def finish(a):
@@ -225,7 +225,7 @@ def pg_steel():
         stxt(d,"13'1\"",(t[0]+dx+18,(b[1]+t[1])/2),F(int(58*SC)),anchor='lm')
     return page(walls(court(scene())),"Tallest steel member: 13'1\"","Glass and mesh walls on a steel frame",None,ex)
 def pg_setback():
-    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=-(ACC[0]/2+12)
+    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=-(ACC[0]/2+17)
     dashed(a,P([(xl,-ACC[1]/2),(xl,ACC[1]/2)]),closed=False,col=(255,236,150),seg=18,th=5)
     def ex(img,d):
         p0=P([(-ACC[0]/2,-8)])[0]; p1=P([(xl,-8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
@@ -236,7 +236,7 @@ def pg_orient():
         r=60*SC
         if FMT=='wide': cx,cy=C['safe'][0]+640+110,H*0.5
         elif FMT=='reel': cx,cy=C['safe'][0]+r+20,1080   # beside the court, inside the Reels safe zone
-        else: cx=C['cx']-C['nw']*0.72; cy=C['cb']-r-10*SC
+        else: cb=P([(0,COURT[1]/2+4.5)])[0][1]; cx=C['cx']; cy=cb+r+40*SC
         d.ellipse((cx-r,cy-r,cx+r,cy+r),outline=(255,255,255,255),width=4)
         a0=P([(0,l/2)])[0]; a1=P([(0,-l/2)])[0]; v=(a1-a0)/np.linalg.norm(a1-a0); n=np.array([-v[1],v[0]])
         tip=(cx+v[0]*(r-8),cy+v[1]*(r-8)); tail=(cx-v[0]*(r-8),cy-v[1]*(r-8)); s1=(cx+n[0]*16,cy+n[1]*16); s2=(cx-n[0]*16,cy-n[1]*16)
@@ -256,9 +256,9 @@ def pg_lights():
         b=P([(x,y)])[0]; t=up(x,y,20); cv2.line(a,(int(b[0]),int(b[1])),(int(t[0]),int(t[1])),(52,56,64),5,cv2.LINE_AA)
         g=np.zeros((H,W),np.float32); cv2.circle(g,(int(t[0]),int(t[1])),int(36*SC)+4,1,-1); g=cv2.GaussianBlur(g,(0,0),16)[...,None]
         a[:]=a*(1-g*0.7)+np.array((255,245,210))*g*0.7
-    ub=P([(PAD[0]/2+12,l/2-14)])[0]; s=SC
+    ub=P([(-(PAD[0]/2+(6 if FMT=='reel' else 12)),l/2-14)])[0]; s=SC
     cv2.rectangle(a,(int(ub[0]-26*s),int(ub[1]-44*s)),(int(ub[0]+26*s),int(ub[1])),(170,170,165),-1); cv2.rectangle(a,(int(ub[0]-26*s),int(ub[1]-44*s)),(int(ub[0]+26*s),int(ub[1])),(90,90,90),3)
-    pl=P([poles[3]])[0]; dashed(a,[(ub[0]-26*s,ub[1]-10),(pl[0],pl[1])],closed=False,col=(255,236,150),seg=14,th=4)
+    pl=P([poles[2]])[0]; dashed(a,[(ub[0]-26*s,ub[1]-10),(pl[0],pl[1])],closed=False,col=(255,236,150),seg=14,th=4)
     def ex(img,d): lbl(d,"utility box",(ub[0],ub[1]+28*SC),28)
     return page(a,"Tips before you build","3. Want lights?","Plan access to your utility box",ex)
 def pg_cta1(): return page(walls(court(scene())),"Permit rules vary by city or county","We plan this early to avoid costly redesigns")
