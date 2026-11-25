@@ -27,3 +27,12 @@ ffmpeg -i video_noaudio.mp4 -i sfx.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a
 - How a padel court gets built: storyboard only.
 - Padel court maintenance and the Wema PadelPro: storyboard only (needs Wema demo footage).
 - Design is open: A (website), B (Instagram, Inter), C (Instagram, Figtree). Decide on the first finished video.
+
+## Assets in Google Drive
+Raw footage and photos live in Drive, not in this repo: **APL Videos** (folder id `14sHYd6iZ_9nw-7Dvli0JOGLWE_VcwlTG`).
+- 0. Brand: `17ZqYNySykrKB4V61Pp3vAEj-Eo9wlvut`
+- 1. Padel court dimensions: `1ntUCHp_ZkHeAxMth5DOI9m9D3q2YeXOx` (v1 frames inside)
+- 2. Padel court cost: `13Ccpb7_QfwnISWpTAZweavaa2PqpEXwb`
+- 3. How a padel court gets built: `13JNrvrWPLlF7ixOkdqgBG7TI94IuZVSm`
+- 4. Maintenance and Wema PadelPro: `1csXGBp5MCZSkV6RP5ZWcgb-LZmXHiAj9`
+Files over about 3 MB can't be pulled through the Drive connector; for big clips, use the device bridge or ask Raj for a smaller export.
