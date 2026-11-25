@@ -1,6 +1,6 @@
 # Still: bird's-eye view of the court plan in a backyard, grainy illustrated style (matches illustrated.py).
 from common import *
-import illustrated as IL
+import illustrated as IL, os
 F=IL.F; rng=np.random.default_rng(8)
 S=13.0; CX,CY=540,990
 def R(wl): w,l=wl; return (CX-w*S/2,CY-l*S/2,CX+w*S/2,CY+l*S/2)
@@ -25,7 +25,7 @@ rectfill(P,(214,206,190))
 # glass + steel frame shadow cast to the lower right (late afternoon sun)
 sh=np.zeros((H,W),np.float32); cv2.rectangle(sh,(int(C[0])+10,int(C[1])+14),(int(C[2])+26,int(C[3])+30),1,10); sh=cv2.GaussianBlur(sh,(0,0),6)
 a*=1-0.28*sh[...,None]
-rectfill(C,(62,112,168)); a[int(C[1]):int(C[3]),int(C[0]):int(C[2])]*=1+0.06*IL.TONE[int(C[1]):int(C[3]),int(C[0]):int(C[2]),None]
+rectfill(C,IL.COURT_COL); a[int(C[1]):int(C[3]),int(C[0]):int(C[2])]*=1+0.06*IL.TONE[int(C[1]):int(C[3]),int(C[0]):int(C[2]),None]
 L=(250,244,232)
 cv2.rectangle(a,(int(C[0]),int(C[1])),(int(C[2]),int(C[3])),L,4,cv2.LINE_AA)
 for y in (CY-SV*S,CY+SV*S): cv2.line(a,(int(C[0]),int(y)),(int(C[2]),int(y)),L,3,cv2.LINE_AA)
@@ -59,4 +59,4 @@ txt("concrete pad  36' x 69'",(CX,int((P[3]+A[3])/2)+6),F(30,800))
 for xx in (CX-150,CX+150): d.line((xx,int(P[3])-2,xx,int((P[3]+A[3])/2)-12),fill=(255,255,255,230),width=3)
 txt("+ 6' clear all around",(CX,int(A[1])-32),F(36,800))
 txt("48' x 81' total",(W//2,1660),F(84))
-img.convert('RGB').save('/home/claude/video/illustrated_overhead.jpg',quality=92)
+img.convert('RGB').save(os.environ.get('OUT','/home/claude/video/illustrated_overhead.jpg'),quality=92)

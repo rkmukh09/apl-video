@@ -2,6 +2,8 @@
 # Warm sunset sky, layered hills, cypress trees; the court plan sits on a backyard lawn in perspective.
 from common import *
 N=270
+import os
+COURT_COL=tuple(int(v) for v in os.environ.get("COURT_COL","62,112,168").split(","))
 rng=np.random.default_rng(21)
 F=lambda sz,w=800: font(f'figtree-latin-{w}-normal',sz)
 _LF={}
@@ -80,7 +82,7 @@ def frame(i):
         mm=(m/255.0*pa)[...,None]; a=a*(1-mm)+np.array((214,204,188))*(1+0.05*TONE[...,None])*mm
     if ca>0:
         m=np.zeros((H,W),np.uint8); cv2.fillPoly(m,[np.int32(R(*COURT))],255,cv2.LINE_AA)
-        mm=(m/255.0*ca)[...,None]; a=a*(1-mm)+np.array((62,112,168))*(1+0.07*TONE[...,None])*mm
+        mm=(m/255.0*ca)[...,None]; a=a*(1-mm)+np.array(COURT_COL)*(1+0.07*TONE[...,None])*mm
         L=(250,244,232); w,l=COURT
         lines=[R(w,l)]+[P([(-w/2,y),(w/2,y)]) for y in (-SV,0,SV)]+[P([(0,-SV),(0,SV)])]
         ov=a.copy()
