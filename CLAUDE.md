@@ -1,6 +1,7 @@
 # Rules for this repo
 - Read brand/BRAND.md before designing or rendering anything.
 - Facts only from the live article on americanpadellabs.com (check the website repo rkmukh09/american-padel-labs, origin/main). Never invent numbers.
+- Court enclosure (Raj's spec, Nov 24): 9'10" (3 m) glass back walls; 13'1" (4 m) of glass at each end of the sides; 39'4" (12 m) of 9'10" mesh in the middle with an opening at the net; ball-stop mesh above the end glass; 13'1" (4 m) columns. Ignore enclosure heights on the website.
 - Feet first, meters in parentheses. Concrete pad 36' x 69' (includes the ring beam). Plus 6' clear around the pad on all sides for install machinery and access in and out: 48' x 81' total.
 - Never show the sand grade. Don't present partner projects (FSC, Padel Box) as APL builds.
 - Storyboard in the Google Doc is the source of truth; keep storyboards/<slug>.json in sync with it.

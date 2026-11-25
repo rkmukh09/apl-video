@@ -6,10 +6,10 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FMTS={
  # safe = (x0,y0,x1,y1) where text may go; text: where the caption block sits
- 'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=870, cb=1650,cx=512, fw=215,nw=480,text='top'),
- 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=400, cb=860, cx=540, fw=170,nw=380,text='bottom'),
- 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=250, ct=280, cb=630, cx=540, fw=130,nw=290,text='bottom'),
- 'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=455, cb=1000,cx=1340,fw=200,nw=470,text='left'),
+ 'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=880, cb=1700,cx=512, fw=215,nw=470,text='top'),
+ 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=420, cb=1080,cx=540, fw=170,nw=470,text='bottom'),
+ 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=250, ct=290, cb=820, cx=540, fw=130,nw=440,text='bottom'),
+ 'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=450, cb=1030,cx=1330,fw=200,nw=560,text='left'),
 }
 FMT=os.environ.get('FMT','reel'); C=FMTS[FMT]; W,H=C['W'],C['H']
 FT=dict(COURT=(32+10/12,65+7/12),PAD=(36.0,69.0),ACC=(48.0,81.0)); SV=22+10/12
@@ -68,13 +68,21 @@ def scene():
     for k in range(4):
         x=W*(0.22+0.19*k); fillpoly(a,[(x+30*s*math.cos(u),gy-8-18*s*abs(math.sin(u))) for u in np.linspace(0,math.pi,20)],(76,118,80),0.05,70+k)
     return a
-SRC=np.float32([[-24,-40.5],[24,-40.5],[24,40.5],[-24,40.5]])
-DST=np.float32([[C['cx']-C['fw'],C['ct']],[C['cx']+C['fw'],C['ct']],[C['cx']+C['nw'],C['cb']],[C['cx']-C['nw'],C['cb']]])
-Hm=cv2.getPerspectiveTransform(SRC,DST)
-def P(pts): return cv2.perspectiveTransform(np.float32(pts)[None],Hm)[0]
+# True 3D camera (3/4 view so the enclosure reads), fitted into each format's court box.
+AZ=math.radians(float(os.environ.get('CAM_AZ','28'))); EL=math.radians(float(os.environ.get('CAM_EL','30'))); DIST=170.0
+_cp=np.array([DIST*math.cos(EL)*math.sin(AZ),DIST*math.cos(EL)*math.cos(AZ),DIST*math.sin(EL)])
+_cf=-_cp/np.linalg.norm(_cp); _r=np.cross(_cf,[0,0,1.0]); _r/=np.linalg.norm(_r); _u=np.cross(_r,_cf)
+def _raw(p):
+    v=np.array(p,float)-_cp; z=v@_cf; return np.array([(v@_r)/z,-(v@_u)/z])
+_fitpts=[(x,y,0) for x in (-24,24) for y in (-40.5,40.5)]+[(x,y,13+1/12) for x in (-COURT[0]/2,COURT[0]/2) for y in (-COURT[1]/2,COURT[1]/2)]
+_rp=np.array([_raw(p) for p in _fitpts]); _mn=_rp.min(0); _mx=_rp.max(0)
+_bx0,_bx1=C['cx']-C['nw'],C['cx']+C['nw']; _by0,_by1=C['ct']-0.05*H,C['cb']
+_sc=min((_bx1-_bx0)/(_mx[0]-_mn[0]),(_by1-_by0)/(_mx[1]-_mn[1]))
+_off=np.array([(_bx0+_bx1)/2,(_by0+_by1)/2])-_sc*(_mn+_mx)/2
+def proj(x,y,z=0.0): return _off+_sc*_raw((x,y,z))
+def P(pts): return np.float32([proj(p[0],p[1],0) for p in pts])
 def R(w,l): return P([(-w/2,-l/2),(w/2,-l/2),(w/2,l/2),(-w/2,l/2)])
-def ppf(x,y): p=P([(x-0.5,y),(x+0.5,y)]); return float(np.linalg.norm(p[1]-p[0]))
-def up(x,y,h): b=P([(x,y)])[0]; return (b[0],b[1]-h*ppf(x,y))
+def up(x,y,h): q=proj(x,y,h); return (float(q[0]),float(q[1]))
 def fillR(a,poly,col,al):
     m=np.zeros((H,W),np.uint8); cv2.fillPoly(m,[np.int32(poly)],255,cv2.LINE_AA); mm=(m/255.0*al)[...,None]; return a*(1-mm)+np.array(col)*mm
 def court(a,pad=True,clear=False):
@@ -87,57 +95,54 @@ def court(a,pad=True,clear=False):
         cv2.polylines(a,[np.int32(ln*4)],k==0,(250,244,232),4,cv2.LINE_AA,shift=2)
     return a
 def walls(a):
-    # Regulation enclosure (live article + Raj): back walls 6'7" glass with mesh above; the back corners and the
-    # top ball-mesh panels reach 13'1" (4 m); side walls step down to 6'7" toward the net (glass, then mesh).
-    w,l=COURT; hw,hl=w/2,l/2; G=6+7/12; TOP=13+1/12; M2=6.5617
-    def quad(p0,p1,h0,h1,kind):
-        pts=np.float32([P([p0])[0],P([p1])[0],up(*p1,h1),up(*p0,h0)])
-        o=a.copy()
-        if kind=='glass':
-            cv2.fillPoly(o,[np.int32(pts)],(200,225,240),cv2.LINE_AA); a[:]=a*0.75+o*0.25
-            cv2.polylines(a,[np.int32(pts)],True,(235,240,245),2,cv2.LINE_AA)
-        else:
-            cv2.fillPoly(o,[np.int32(pts)],(70,76,86),cv2.LINE_AA); a[:]=a*0.88+o*0.12
-            n=max(2,int(abs(np.linalg.norm(np.array(p1)-np.array(p0)))/1.6))
-            for k in range(1,n):
-                t=k/n; q=(p0[0]+(p1[0]-p0[0])*t,p0[1]+(p1[1]-p0[1])*t); b0=P([q])[0]; b1=up(*q,h0)
-                cv2.line(a,(int(b0[0]),int(b0[1]-(0 if h0==h1 else 0))),(int(b1[0]),int(b1[1])),(60,66,76),1,cv2.LINE_AA)
-            for hh in np.arange(1.6,max(h0,h1),1.6):
-                b0=up(*p0,hh); b1=up(*p1,hh); cv2.line(a,(int(b0[0]),int(b0[1])),(int(b1[0]),int(b1[1])),(60,66,76),1,cv2.LINE_AA)
-    def wall(p0,p1,lo,hi,kind): 
-        # lo..hi vertical band: draw as quad from base offset lo up to hi
-        pts0=up(*p0,lo); pts1=up(*p1,lo)
-        if kind=='glass': quad(p0,p1,hi,hi,'glass') if lo==0 else None
+    # Panoramic court, matched to Raj's reference renders (Nov 24): full-height glass back walls with a steel
+    # top beam and a ball-stop mesh band above; glass side panels for the first 4 m from each back wall, the
+    # first 2 m also topped with mesh; full-height mesh side panels in the middle with one opening per side
+    # next to the net. Corner posts and the top mesh reach 13'1" (Raj).
+    w,l=COURT; hw,hl=w/2,l/2; TOP=13+1/12; G=9+10/12; M=3.2808   # 1 m in feet
+    STEEL=(46,50,58); MESH=(62,68,78)
     def band(p0,p1,lo,hi,kind):
         b=[up(*p0,lo),up(*p1,lo),up(*p1,hi),up(*p0,hi)]
-        o=a.copy(); col=(200,225,240) if kind=='glass' else (70,76,86); al=0.25 if kind=='glass' else 0.12
+        o=a.copy(); col=(205,228,242) if kind=='glass' else MESH; al=0.30 if kind=='glass' else 0.10
         cv2.fillPoly(o,[np.int32(b)],col,cv2.LINE_AA); a[:]=a*(1-al)+o*al
-        if kind=='glass': cv2.polylines(a,[np.int32(b)],True,(235,240,245),2,cv2.LINE_AA)
+        if kind=='glass':
+            hl_=[up(*p0,hi*0.92),up(*p1,hi*0.92)]; cv2.line(a,(int(hl_[0][0]),int(hl_[0][1])),(int(hl_[1][0]),int(hl_[1][1])),(240,246,250),1,cv2.LINE_AA)
         else:
-            L=abs(p1[0]-p0[0])+abs(p1[1]-p0[1]); n=max(2,int(L/1.4))
-            for k in range(0,n+1):
+            L=abs(p1[0]-p0[0])+abs(p1[1]-p0[1]); n=max(2,int(L/0.9))
+            for k in range(1,n):
                 t=k/n; q=(p0[0]+(p1[0]-p0[0])*t,p0[1]+(p1[1]-p0[1])*t); u0=up(*q,lo); u1=up(*q,hi)
-                cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),(64,70,80),1,cv2.LINE_AA)
-            for hh in np.arange(lo,hi+0.01,1.4):
-                u0=up(*p0,hh); u1=up(*p1,hh); cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),(64,70,80),1,cv2.LINE_AA)
-            cv2.polylines(a,[np.int32(b)],True,(60,64,72),2,cv2.LINE_AA)
-    def post(x,y,h):
-        b=P([(x,y)])[0]; t=up(x,y,h); cv2.line(a,(int(b[0]),int(b[1])),(int(t[0]),int(t[1])),(52,56,64),4,cv2.LINE_AA)
+                cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),MESH,1,cv2.LINE_AA)
+            for hh in np.arange(lo+0.9,hi,0.9):
+                u0=up(*p0,hh); u1=up(*p1,hh); cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),MESH,1,cv2.LINE_AA)
+    def beam(p0,p1,h,th=3):
+        u0=up(*p0,h); u1=up(*p1,h); cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),STEEL,th,cv2.LINE_AA)
+    def post(x,y,h,th=4):
+        bb=P([(x,y)])[0]; t=up(x,y,h); cv2.line(a,(int(bb[0]),int(bb[1])),(int(t[0]),int(t[1])),STEEL,th,cv2.LINE_AA)
+    def glass_panels(p0,p1,n,h):
+        for k in range(n):
+            q0=(p0[0]+(p1[0]-p0[0])*k/n,p0[1]+(p1[1]-p0[1])*k/n); q1=(p0[0]+(p1[0]-p0[0])*(k+1)/n,p0[1]+(p1[1]-p0[1])*(k+1)/n)
+            band(q0,q1,0,h,'glass')
+            u0=P([q1])[0]; u1=up(*q1,h); cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),(225,235,242),1,cv2.LINE_AA)
     def back(y):
-        band((-hw,y),(hw,y),0,G,'glass'); band((-hw,y),(hw,y),G,TOP,'mesh')
-        for x in np.linspace(-hw,hw,6): post(x,y,TOP)
-    def side(x,sgn):
-        # from the far back (y=-hl) toward the net, then from the net to the near back (y=+hl)
+        glass_panels((-hw,y),(hw,y),5,G); band((-hw,y),(hw,y),G,TOP,'mesh')
+        beam((-hw,y),(hw,y),G); beam((-hw,y),(hw,y),TOP)
+        for x in np.linspace(-hw,hw,6): post(x,y,TOP,5 if abs(x)==hw else 3)
+    def side(x,opening_sign):
+        # spec (Raj, Nov 24): 4 m of glass at each end (3 m tall), 12 m of 3 m mesh in the middle,
+        # 4 m columns; ball-stop mesh above the end glass, stepping down over the second panel.
         for end in (-1,1):
             y0=end*hl; d=-end
-            band((x,y0),(x,y0+d*M2),0,G,'glass'); band((x,y0),(x,y0+d*M2),G,TOP,'mesh')
-            band((x,y0+d*M2),(x,y0+d*2*M2),0,G,'glass')
-            band((x,y0+d*2*M2),(x,0),0,G,'mesh')
-            post(x,y0,TOP); post(x,y0+d*M2,TOP); post(x,y0+d*2*M2,G)
-        post(x,0,G)
-    back(-hl)
-    for x in (-hw,hw): side(x,1)
-    back(hl)
+            glass_panels((x,y0),(x,y0+d*2*M),1,G); band((x,y0),(x,y0+d*2*M),G,TOP,'mesh')
+            glass_panels((x,y0+d*2*M),(x,y0+d*4*M),1,G); band((x,y0+d*2*M),(x,y0+d*4*M),G,G+0.5*M,'mesh')
+            beam((x,y0),(x,y0+d*4*M),G); beam((x,y0),(x,y0+d*2*M),TOP); beam((x,y0+d*2*M),(x,y0+d*4*M),G+0.5*M,2)
+            post(x,y0+d*2*M,TOP,4); post(x,y0+d*4*M,G+0.5*M,4)
+            ystart=y0+d*4*M; yo=d*0.75*M          # opening 1.5 m wide, centered on the net
+            band((x,ystart),(x,-yo),0,G,'mesh'); band((x,-yo),(x,0),2.2*M,G,'mesh')
+            post(x,-yo,G,3); beam((x,-yo),(x,0),2.2*M,2)
+            for yy in np.linspace(ystart,-yo,4)[1:-1]: post(x,yy,G,2)
+            beam((x,ystart),(x,0),G,2)
+    farx=-hw if math.sin(AZ)>0 else hw
+    back(-hl); side(farx,1); side(-farx,-1); back(hl)
     return a
 def finish(a):
     a=a*(1+0.045*STREAK[...,None]); sp=(STIP<0.035)[...,None]; a=np.where(sp,a*0.86+255*0.14,a)
@@ -214,27 +219,29 @@ def pg_total():
     return page(a,"Total space you need","About 48' x 81'","Leave about 6' around the pad for machinery and easy access in and out",ex)
 def pg_steel():
     def ex(img,d):
-        x,y=w/2,l/2; b=P([(x,y)])[0]; t=up(x,y,13+1/12); dx=50*SC
+        x,y=max([(sx*w/2,sy*l/2) for sx in (-1,1) for sy in (-1,1)],key=lambda c:P([c])[0][1]); b=P([(x,y)])[0]; t=up(x,y,13+1/12); dx=40*SC
         d.line((b[0]+dx,b[1],t[0]+dx,t[1]),fill=(255,255,255,255),width=5)
         for p in (b,t): d.line((p[0]+dx-16,p[1],p[0]+dx+16,p[1]),fill=(255,255,255,255),width=5)
         stxt(d,"13'1\"",(t[0]+dx+18,(b[1]+t[1])/2),F(int(58*SC)),anchor='lm')
     return page(walls(court(scene())),"Tallest steel member: 13'1\"","Glass and mesh walls on a steel frame",None,ex)
 def pg_setback():
-    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=ACC[0]/2+17
-    dashed(a,P([(xl,-ACC[1]/2-4),(xl,ACC[1]/2+2)]),closed=False,col=(255,236,150),seg=18,th=5)
+    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=-(ACC[0]/2+12)
+    dashed(a,P([(xl,-ACC[1]/2),(xl,ACC[1]/2)]),closed=False,col=(255,236,150),seg=18,th=5)
     def ex(img,d):
-        p0=P([(ACC[0]/2,-8)])[0]; p1=P([(xl,-8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
-        pp=P([(xl,-ACC[1]/2+2)])[0]; lbl(d,"property line",(min(pp[0],W-120*SC),pp[1]-30*SC),28)
+        p0=P([(-ACC[0]/2,-8)])[0]; p1=P([(xl,-8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
+        pp=P([(xl,-ACC[1]/2)])[0]; lbl(d,"property line",(min(max(pp[0],C['safe'][0]+110*SC),W-120*SC),pp[1]-30*SC),28)
     return page(a,"Tips before you build","1. Check your town’s setback rules","This decides where on your property a court can go",ex)
 def pg_orient():
     def ex(img,d):
         r=60*SC
         if FMT=='wide': cx,cy=C['safe'][0]+640+110,H*0.5
         elif FMT=='reel': cx,cy=C['safe'][0]+r+20,1080   # beside the court, inside the Reels safe zone
-        else: cb=P([(0,COURT[1]/2+4.5)])[0][1]; cx=C['cx']; cy=cb+r+40*SC
+        else: cx=C['cx']-C['nw']*0.72; cy=C['cb']-r-10*SC
         d.ellipse((cx-r,cy-r,cx+r,cy+r),outline=(255,255,255,255),width=4)
-        d.polygon([(cx,cy-r+8),(cx-16,cy),(cx+16,cy)],fill=TERRA+(255,)); d.polygon([(cx,cy+r-8),(cx-16,cy),(cx+16,cy)],fill=(255,255,255,255))
-        stxt(d,"N",(cx,cy-r-26*SC),F(int(36*SC))); stxt(d,"S",(cx,cy+r+26*SC),F(int(36*SC)))
+        a0=P([(0,l/2)])[0]; a1=P([(0,-l/2)])[0]; v=(a1-a0)/np.linalg.norm(a1-a0); n=np.array([-v[1],v[0]])
+        tip=(cx+v[0]*(r-8),cy+v[1]*(r-8)); tail=(cx-v[0]*(r-8),cy-v[1]*(r-8)); s1=(cx+n[0]*16,cy+n[1]*16); s2=(cx-n[0]*16,cy-n[1]*16)
+        d.polygon([tip,s1,s2],fill=TERRA+(255,)); d.polygon([tail,s1,s2],fill=(255,255,255,255))
+        stxt(d,"N",(cx+v[0]*(r+28*SC),cy+v[1]*(r+28*SC)),F(int(36*SC))); stxt(d,"S",(cx-v[0]*(r+28*SC),cy-v[1]*(r+28*SC)),F(int(36*SC)))
     return page(walls(court(scene())),"Tips before you build","2. Run it north-south","Keeps the sun out of players' eyes",ex)
 def pg_slope():
     def ex(img,d):

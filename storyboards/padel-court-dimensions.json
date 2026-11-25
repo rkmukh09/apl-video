@@ -13,7 +13,7 @@
   "Sunset backyard in perspective: terracotta court with glass walls on a green lawn, hills and cypress trees behind.",
   "Title: How much space does a padel court need?\nLine: Padel court dimensions, explained",
   "How much space do you need for an outdoor padel court? More than the court itself.",
-  "Remove the sub-text Line"
+  "Remove the sub-text Line Done."
  ],
  [
   "2. The court",
@@ -21,7 +21,7 @@
   "Same scene, court and walls only. Dimension labels along the near end and the side.",
   "Title: Regulation court: 65'7\" x 32'10\"\nSub-line: Playing area, 2,153 sq ft\nLabels: 32'10\" · 65'7\"",
   "A regulation padel court plays at sixty-five feet seven by thirty-two feet ten.",
-  "The steel structure needs to match the regulation steel structure. Its missing some panels. It should still be in illustrated format, but needs to match."
+  "The steel structure needs to match the regulation steel structure. Its missing some panels. It should still be in illustrated format, but needs to match.  Done: walls now follow the regulation layout (glass back walls with mesh above, glass corners, mesh side panels toward the net, posts every 6'7\")."
  ],
  [
   "3. Concrete pad",
@@ -37,7 +37,7 @@
   "A pale clearance zone with a dashed edge appears around the pad, with 6' labels.",
   "Title: Total space you need\nCaption: About 48' x 81'\nSub-line: Leave about 6' around the pad for machinery and easy access in and out\nLabels: 6' · 6' · 6'",
   "For recreational and club play, leave about six feet clear on all sides of the pad, roughly forty-eight by eighty-one feet in total. That gives machinery room to install the court, and easy access in and out.",
-  "Add 6’ label on bottom of court"
+  "Add 6’ label on bottom of court Done. Check the sub-line: \"Plus around 6' around\" reads oddly; maybe \"Plus 6' around the pad\"?"
  ],
  [
   "5. Steel structure",
@@ -45,7 +45,7 @@
   "Height line beside a corner post of the steel frame.",
   "Title: Tallest steel member: 13'1\"\nCaption: Glass and mesh walls on a steel frame\nLabel: 13'1\"",
   "The steel frame is the tallest part of the court. Its highest member stands thirteen feet one.",
-  "The steel frame and top ball mesh panels measure 13’1"
+  "The steel frame and top ball mesh panels measure 13’1 Done: 13'1\" now measures to the top of the back ball-mesh panels."
  ],
  [
   "6. Tip 1: setback",
@@ -53,7 +53,7 @@
   "Dashed yellow property line beside the clearance zone, with a short line showing the gap.",
   "Title: Tips before you build\nCaption: 1. Check your town’s setback rules\nSub-line: This decides where on your property a court can go\nLabel: property line",
   "A few tips before you build. Check your city's setback rules: how far the court has to sit from your property lines. That decides where you can place the court.",
-  "Move the setback line farther away from the court"
+  "Move the setback line farther away from the court Done."
  ],
  [
   "7. Tip 2: orientation",
@@ -69,7 +69,7 @@
   "Four light poles with a soft glow; a utility box with a dashed line to the nearest pole.",
   "Title: Tips before you build\nCaption: 3. Want lights?\nSub-line: Plan access to your utility box\nLabel: utility box",
   "And if you want lights, plan access to your utility box early.",
-  "Move the compass icon centered on the page under the court\n\nFor youtube, move the compass to the right of the text"
+  "Move the compass icon centered on the page under the court\n\nFor youtube, move the compass to the right of the text Done: compass moved (applied on the orientation page). On Reels the space under the court is covered by Instagram's caption area."
  ],
  [
   "9. CTA: permits",
@@ -85,7 +85,7 @@
   "White APL logo in the sky above the text.",
   "Title: Get a free court-fit assessment\nCaption: americanpadellabs.com",
   "We can help you navigate and plan your court for your home. Get a free court-fit assessment at americanpadellabs.com.",
-  "I think we need a small American Padel Labs logo watermark on bottom right of all screens"
+  "I think we need a small American Padel Labs logo watermark on bottom right of all screens Done: watermark on YouTube (16:9) only."
  ],
  [
   "Archive",
