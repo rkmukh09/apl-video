@@ -180,7 +180,7 @@ def pg_setback():
     def ex(img,d):
         p0=P([(ACC[0]/2,8)])[0]; p1=P([(xl,8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
         lbl(d,"property line",tuple(P([(xl,-ACC[1]/2-4)])[0]+[-20*SC,-30*SC]),28)
-    return page(a,"Tips before you build","1. Check setback rules","How far the court must sit from your property lines",ex)
+    return page(a,"Tips before you build","1. Check setback rules","They decide where on your property the court can go",ex)
 def pg_orient():
     def ex(img,d):
         nb=P([(-ACC[0]/2-6,ACC[1]/2-6)])[0]; r=60*SC; cx=max(nb[0],C['safe'][0]+r+10); cy=min(nb[1],H-r-60)
@@ -205,7 +205,7 @@ def pg_lights():
     cv2.rectangle(a,(int(ub[0]-26*s),int(ub[1]-44*s)),(int(ub[0]+26*s),int(ub[1])),(170,170,165),-1); cv2.rectangle(a,(int(ub[0]-26*s),int(ub[1]-44*s)),(int(ub[0]+26*s),int(ub[1])),(90,90,90),3)
     pl=P([poles[3]])[0]; dashed(a,[(ub[0]-26*s,ub[1]-10),(pl[0],pl[1])],closed=False,col=(255,236,150),seg=14,th=4)
     def ex(img,d): lbl(d,"utility box",(ub[0],ub[1]+28*SC),28)
-    return page(a,"Tips before you build","4. Want lights?","Plan access to your utility box",ex)
+    return page(a,"Tips before you build","3. Want lights?","Plan access to your utility box",ex)
 def pg_cta1(): return page(walls(court(scene())),"Will a court fit your property?","Permit rules vary by county and city","Plan early to avoid costly redesigns")
 LOGO=Image.open(os.path.join(ROOT,'brand','logo.png')).convert('RGBA')
 def pg_cta2():
@@ -216,9 +216,9 @@ def pg_cta2():
         ly=y0+10 if C['text']!='left' else 90
         img.alpha_composite(lg,(int(cx-lg.width/2),int(ly)))
     top={'reel':int(250),'wide':300}.get(FMT,0)
-    return page(walls(court(scene())),[],"We'll help you navigate and plan your home court",["Free court-fit assessment","Planning a club or indoor facility? We can help with that too.","americanpadellabs.com"],ex,top=top)
+    return page(walls(court(scene())),[],"We'll help you navigate and plan your home court",["Free court-fit assessment","americanpadellabs.com"],ex,top=top)
 PAGES={'01_hook':pg_hook,'02_court':pg_court,'03_pad':pg_pad,'04_total':pg_total,'05_steel':pg_steel,'06_setback':pg_setback,
-       '07_orientation':pg_orient,'08_slope':pg_slope,'09_lights':pg_lights,'10_cta_permits':pg_cta1,'11_cta_help':pg_cta2}
+       '07_orientation':pg_orient,'09_lights':pg_lights,'10_cta_permits':pg_cta1,'11_cta_help':pg_cta2}
 if __name__=='__main__':
     import sys
     out=f'/home/claude/video/pages/{FMT}'; os.makedirs(out,exist_ok=True)

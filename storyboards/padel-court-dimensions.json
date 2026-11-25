@@ -1,61 +1,94 @@
 [
  [
-  "Scene",
-  "In v1",
-  "Frame",
+  "Page",
+  "Frames (all 4 formats)",
   "Visual",
-  "On-screen text (every word; edit here)",
-  "Talk track (draft)",
+  "On-screen text (proposed; edit here)",
+  "Talk track (proposed)",
   "Changes"
  ],
  [
   "1. Hook",
-  "Yes, 0:00-0:04",
-  "View frame",
-  "Overhead photo of a court, slow zoom, fades to navy.",
-  "Headline: HOW MUCH SPACE / DOES A PADEL COURT / NEED?\nBottom line: Padel court dimensions, explained",
+  "View frames",
+  "Sunset backyard in perspective: terracotta court with glass walls on a green lawn, hills and cypress trees behind.",
+  "Title: How much space does a padel court need?\nLine: Padel court dimensions, explained",
   "How much space do you need for an outdoor padel court? More than the court itself.",
   ""
  ],
  [
-  "2. The space you need",
-  "Partly (v1 0:04-0:11 and 0:25-0:34)",
-  "View frame",
-  "Three nested rectangles, drawn to scale, numbered 1-2-3. Beat 1: court (play area) draws with its lines. Beat 2: concrete pad and ring beam fills in around it. Beat 3: dashed access zone, 6' out from the pad on all sides (48' x 81' total). End state holds all three with a numbered legend at the bottom.",
-  "Headline: THE SPACE YOU NEED\nBeat 1 labels: 32'10\" · 65'7\"\nBeat 1 caption: REGULATION COURT: 65'7\" X 32'10\"\nBeat 1 sub-caption: Playing area, 2,153 sq ft\nBeat 2 labels: 36' · 69'\nBeat 2 caption: RECOMMENDED CONCRETE PAD: 36' X 69'\nBeat 2 sub-caption: Includes the perimeter concrete ring beam that anchors the court\nBeat 3 labels: 6' · 6' · 6' · 6'\nBeat 3 caption: PLUS 6' CLEAR AROUND THE PAD\nBeat 3 sub-caption: For install machinery and easy access in and out\nLegend 1: COURT (PLAY AREA) / 32'10\" x 65'7\"\nLegend 2: CONCRETE PAD + RING BEAM / 36' x 69'\nLegend 3: ACCESS ZONE / 48' x 81' total, 6' clear around the pad",
-  "A regulation padel court plays at sixty-five feet seven by thirty-two feet ten. But the concrete pad you build on should be thirty-six by sixty-nine feet. That includes the perimeter ring beam that anchors the court to the concrete. For recreational and club play, keep another six feet clear on all sides of the pad, forty-eight by eighty-one feet in total. That gives machinery room to install the court, and easy access in and out.",
-  "Feet only, no meters, in this scene and every other one."
- ],
- [
-  "3. The steel structure",
-  "No (new)",
-  "After render",
-  "3D render of the full court (glass, mesh, steel). A height line marks the tallest point of the steel wall.",
-  "Headline: THE STEEL STRUCTURE\nHeight label: 13'1\"\nCaption: TALLEST STEEL MEMBER: 13'1\"\nSub-caption: Glass and mesh walls on a steel frame",
-  "The steel frame is the tallest part of the court. Its highest member stands thirteen feet one.",
-  "3D render: Claude will use court-render.png from the website unless you drop a different one in the Drive folder."
- ],
- [
-  "4. Tips before you build",
-  "No (new)",
-  "After render",
-  "Four tips tick in one at a time over a top view of the court and pad; compass arrow for orientation, a small tilt arrow for slope, a utility box icon for lights.",
-  "Headline: TIPS BEFORE YOU BUILD\nTip 1: CHECK SETBACK RULES\nTip 1 sub-line: How far the court must sit from your property lines\nTip 2: RUN IT NORTH-SOUTH\nTip 2 sub-line: Keeps the sun out of players' eyes\nTip 3: SLOPE THE SLAB 0.5-0.7%\nTip 3 sub-line: From one short end to the other, so water drains\nTip 4: WANT LIGHTS? PLAN ACCESS TO YOUR UTILITY BOX",
-  "A few tips before you build. Check your city's setback rules: how far the court has to sit from your property lines. Run the court north-south to keep the sun out of players' eyes. Slope the slab half a percent to seven tenths of a percent, from one short end to the other, so water drains. And if you want lights, plan access to your utility box early.",
+  "2. The court",
+  "View frames",
+  "Same scene, court and walls only. Dimension labels along the near end and the side.",
+  "Title: The space you need\nCaption: Regulation court: 65'7\" x 32'10\"\nSub-line: Playing area, 2,153 sq ft\nLabels: 32'10\" · 65'7\"",
+  "A regulation padel court plays at sixty-five feet seven by thirty-two feet ten.",
   ""
  ],
  [
-  "5. Call to action",
-  "Yes, 0:40-0:46",
-  "View frame",
-  "Logo fades in on navy.",
-  "Logo: AMERICAN PADEL LABS (logo image, not editable text)\nHeadline: WILL A COURT FIT YOUR PROPERTY?\nLine 1: Permit rules vary by county and city\nLine 2: Plan early to avoid costly redesigns\nLine 3: We'll help you navigate and plan your home court\nSub-line: Free court-fit assessment\nSmall line: Planning a club or indoor facility? We can help with that too.\nURL: AMERICANPADELLABS.COM",
-  "Padel courts can count as structures or fence installations, and permit requirements vary by county and city. Planning for them early avoids costly redesigns later. We can help you navigate and plan your court for your home. Planning a club or indoor facility? Reach out and we can help with that too. Get a free court-fit assessment at americanpadellabs.com.",
-  "Done: added your permit and club lines."
+  "3. Concrete pad",
+  "View frames",
+  "The concrete pad appears as a stone band around the court.",
+  "Title: The space you need\nCaption: Recommended concrete pad: 36' x 69'\nSub-line: Includes the perimeter concrete ring beam that anchors the court\nLabels: 36' · 69'",
+  "But the concrete pad you build on should be thirty-six by sixty-nine feet. That includes the perimeter ring beam that anchors the court to the concrete.",
+  ""
+ ],
+ [
+  "4. 48' x 81' total",
+  "View frames",
+  "A pale clearance zone with a dashed edge appears around the pad, with 6' labels.",
+  "Title: The space you need\nCaption: 48' x 81' total\nSub-line: Plus 6' clear around the pad, for install machinery and easy access in and out\nLabels: 6' · 6' · 6'",
+  "For recreational and club play, keep another six feet clear on all sides of the pad, forty-eight by eighty-one feet in total. That gives machinery room to install the court, and easy access in and out.",
+  ""
+ ],
+ [
+  "5. Steel structure",
+  "View frames",
+  "Height line beside a corner post of the steel frame.",
+  "Title: The steel structure\nCaption: Tallest steel member: 13'1\"\nSub-line: Glass and mesh walls on a steel frame\nLabel: 13'1\"",
+  "The steel frame is the tallest part of the court. Its highest member stands thirteen feet one.",
+  ""
+ ],
+ [
+  "6. Tip 1: setback",
+  "View frames",
+  "Dashed yellow property line beside the clearance zone, with a short line showing the gap.",
+  "Title: Tips before you build\nCaption: 1. Check setback rules\nSub-line: They decide where on your property the court can go\nLabel: property line",
+  "A few tips before you build. Check your city's setback rules: how far the court has to sit from your property lines. That decides where you can place the court.",
+  "Done: setback now says it decides where the court can go. Slope tip removed (moved to Archive)."
+ ],
+ [
+  "7. Tip 2: orientation",
+  "View frames",
+  "Compass on the lawn, north pointing along the court.",
+  "Title: Tips before you build\nCaption: 2. Run it north-south\nSub-line: Keeps the sun out of players' eyes\nLabels: N · S",
+  "Run the court north-south to keep the sun out of players' eyes.",
+  ""
+ ],
+ [
+  "8. Tip 3: lights",
+  "View frames",
+  "Four light poles with a soft glow; a utility box with a dashed line to the nearest pole.",
+  "Title: Tips before you build\nCaption: 3. Want lights?\nSub-line: Plan access to your utility box\nLabel: utility box",
+  "And if you want lights, plan access to your utility box early.",
+  ""
+ ],
+ [
+  "9. CTA: permits",
+  "View frames",
+  "Same scene, calm hold.",
+  "Title: Will a court fit your property?\nCaption: Permit rules vary by county and city\nSub-line: Plan early to avoid costly redesigns",
+  "Padel courts can count as structures or fence installations, and permit requirements vary by county and city. Planning for them early avoids costly redesigns later.",
+  ""
+ ],
+ [
+  "10. CTA: we help",
+  "View frames",
+  "White APL logo in the sky above the text.",
+  "Logo: American Padel Labs (logo image)\nCaption: We'll help you navigate and plan your home court\nLine 1: Free court-fit assessment\nLine 2: americanpadellabs.com",
+  "We can help you navigate and plan your court for your home. Get a free court-fit assessment at americanpadellabs.com.",
+  "Done: removed the club line."
  ],
  [
   "Archive",
-  "",
   "",
   "Removed scenes, kept for reference. Not in v2.",
   "",
@@ -63,9 +96,16 @@
   ""
  ],
  [
+  "Tip: slope (removed)",
+  "",
+  "White arrow along the side of the court, from the far short end to the near one.",
+  "Title: Tips before you build\nCaption: 3. Slope the slab 0.5-0.7%\nSub-line: From one short end to the other, so water drains",
+  "Slope the slab half a percent to seven tenths of a percent, from one short end to the other, so water drains.",
+  "Removed (Raj, Nov 24)."
+ ],
+ [
   "5. Net and service lines",
-  "Yes, 0:11-0:17",
-  "View frame",
+  "",
   "Net line pulses; service lines and center line draw.",
   "Headline: NET + SERVICE LINES\nLabels: NET · 22'10\" (6.95M)\nCaption 1: NET: 2'11\" CENTER, 3'0\" POSTS\nSub-caption 1: 0.88m center, 0.92m posts\nCaption 2: SERVICE LINE: 22'10\" FROM NET\nSub-caption 2: 6.95m from the net",
   "The net stands two feet eleven at the center and three feet at the posts. The service lines sit twenty-two feet ten from the net.",
@@ -73,8 +113,7 @@
  ],
  [
   "8. Indoors",
-  "Yes, 0:34-0:40",
-  "View frame",
+  "",
   "Side view of the full court; ceiling lines draw above.",
   "Headline: INDOORS\nLabels: COMPETITION: 23'-26'3\" (7-8M) · MIN. CEILING 19'8\" (6M)\nUnder diagram: SIDE VIEW, FULL COURT\nCaption: 19'8\" OF CLEAR HEIGHT\nSub-caption: 6m minimum above the whole playing surface",
   "Building indoors? You need at least nineteen feet eight of clear ceiling. Twenty-three feet for club play, twenty-six feet three for competition. Lights, ducts, and beams all go above that.",
@@ -82,8 +121,7 @@
  ],
  [
   "7. Orientation",
-  "No (new)",
-  "Archived",
+  "",
   "NEW (proposed text). Court turns to line up with a compass; low sun in the east and west.",
   "Headline: ORIENTATION\nCompass: N · S\nCaption: OUTDOORS: RUN IT NORTH-SOUTH\nSub-caption: Keeps the low sun out of players' eyes",
   "Outdoors, run the court's long axis north-south. East-west works, but the sun sits in players' eyes at sunrise and sunset.",
@@ -91,8 +129,7 @@
  ],
  [
   "9. Permits",
-  "No (new)",
-  "Archived",
+  "",
   "NEW (proposed text). Checklist ticks on one by one.",
   "Headline: CHECK YOUR CITY\nChecklist: SETBACKS · HEIGHT LIMITS · FENCE + LIGHTING RULES · PERMITS\nCaption: RULES VARY BY CITY\nSub-caption: Check early, before you design",
   "And check your city early. Setbacks, height limits, fence and lighting rules, and permits all vary.",
@@ -100,8 +137,7 @@
  ],
  [
   "3. The concrete slab",
-  "No (new)",
-  "Archived",
+  "",
   "NEW (proposed text). Footprint fills in as a concrete pad, then a cross-section with a slight tilt and water running off.",
   "Headline: THE CONCRETE SLAB\nDimension labels: 36' X 69' (11M X 21M)\nArea label: 2,484 SQ FT (231 M²)\nCross-section labels: 6\" POST-TENSIONED · 4,000 PSI · PITCHED 0.5-1%\nCaption: BUILT TO DRAIN\nSub-caption: 6-inch post-tensioned slab, at least 4,000 PSI",
   "That footprint is your concrete slab: thirty-six by sixty-nine feet, about twenty-five hundred square feet. We build it six inches thick, post-tensioned, at least four thousand PSI, and pitched slightly so water runs off. Skip this and you'll see cracking, ponding, and turf failures.",
