@@ -39,3 +39,11 @@ Sources: americanpadellabs.com (Nov 2026) and instagram.com/americanpadellabs (v
 - Chosen for the dimensions video: illustrated, terracotta turf (Raj, Nov 24; replaces clean 3D). Key frames: render/styles/dims_illustrated.py. Overhead still: render/styles/illustrated_overhead.py.
 - No "American Padel Labs" text at the top of frames (Raj, Nov 24).
 - Motion notes from Raj's three reference loops (Nov 24): short living loops (3 to 6 s), slow push-in, gentle parallax, small ambient motion (birds, drifting clouds, swaying trees, sun glow), saturated sunset palette, visible brush grain. Applied to illustrated.py.
+
+## Formats and safe zones (Nov 24, 2026)
+Every still/video is made in four formats by render/styles/pages_fmt.py (FMT=reel|feed|square|wide):
+- reel 1080x1920 (Instagram Reels/Stories, TikTok, YouTube Shorts): text only inside x 65-960, y 270-1248 (Meta Ads Guide margins: top 270, bottom 672, sides 65, right rail 120). Caption block sits at the top.
+- feed 1080x1350 (Instagram/LinkedIn feed): 60 px margins, title top, caption bottom.
+- square 1080x1080: 60 px margins, title top, caption bottom.
+- wide 1920x1080 (YouTube, LinkedIn, X): 96/60 px margins, text column on the left, court on the right.
+No text panels: white text with a soft shadow straight on the scene. One key takeaway per page.
