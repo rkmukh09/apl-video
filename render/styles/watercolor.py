@@ -73,7 +73,7 @@ def arrow(a,p,q,frac,seed):
     if frac>0.98:
         ang=math.atan2(q[1]-p[1],q[0]-p[0])
         for s in (-0.5,0.5): wobble_line(a,q,(q[0]-18*math.cos(ang+s),q[1]-18*math.sin(ang+s)),1,2,0.3,seed+9)
-HF=lambda sz,w=500: font(f'caveat-latin-{w}-normal',sz)
+HF=lambda sz,w=500: font(f'figtree-latin-{w}-normal',sz)
 def frame(i):
     t=i
     img=PAPER.copy()/255
@@ -91,13 +91,13 @@ def frame(i):
     arrow(a,(200,800),(P[0]-4,830),ss(prog(t,118,128)),70)
     arrow(a,(960,500),((A[2]+P[2])/2,570),ss(prog(t,170,180)),80)
     pil=Image.fromarray(a).convert('RGBA')
-    write_on(pil,"The space you need",(70,120),HF(104,700),SEPIA,prog(t,0,22))
-    write_on(pil,"field notes · no. 01",(76,250),HF(48),(120,108,98),prog(t,10,28))
-    write_on(pil,"court  32'10\" x 65'7\"",(CX,C[1]+38),HF(46,700),(255,255,255),prog(t,82,98),anchor='ma')
-    write_on(pil,"concrete pad\n+ ring beam\n36' x 69'",(28,620),HF(44,700),SEPIA,prog(t,124,142))
-    write_on(pil,"6' clear\nall around",(860,380),HF(46,700),SEPIA,prog(t,176,190))
-    write_on(pil,"total: 48' x 81'",(CX,1555),HF(112,700),SEPIA,prog(t,186,204),anchor='ma')
-    write_on(pil,"room for machinery + getting in and out",(CX,1700),HF(46),(120,108,98),prog(t,196,212),anchor='ma')
+    write_on(pil,"The space you need",(70,120),HF(80,700),SEPIA,prog(t,0,22))
+    write_on(pil,"field notes · no. 01",(74,225),HF(36),(120,108,98),prog(t,10,28))
+    write_on(pil,"court  32'10\" x 65'7\"",(CX,C[1]+38),HF(34,700),(255,255,255),prog(t,82,98),anchor='ma')
+    write_on(pil,"concrete pad\n+ ring beam\n36' x 69'",(28,620),HF(32,700),SEPIA,prog(t,124,142))
+    write_on(pil,"6' clear\nall around",(850,390),HF(34,700),SEPIA,prog(t,176,190))
+    write_on(pil,"total: 48' x 81'",(CX,1555),HF(92,700),SEPIA,prog(t,186,204),anchor='ma')
+    write_on(pil,"room for machinery + getting in and out",(CX,1700),HF(36),(120,108,98),prog(t,196,212),anchor='ma')
     out=np.array(pil.convert('RGB'))
     return zoom(out,1.0+0.035*ss(t/N),0.5,0.5)
 if __name__=='__main__':

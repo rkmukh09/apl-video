@@ -29,7 +29,7 @@ Sources: americanpadellabs.com (Nov 2026) and instagram.com/americanpadellabs (v
 - Font decided: Figtree. Layout/color still open: website navy (A) or Instagram footage look (C). Decide on the first finished video.
 
 ## Style samples (Nov 24, 2026, for comparison; not yet chosen)
-- render/styles/vox.py: paper collage (board #EFEBE3, ink, one yellow #EDBD2E), animated on twos, Libre Caslon / Special Elite / Permanent Marker / Anton.
-- render/styles/watercolor.py: watercolor field journal, washes bleed in on paper, Caveat hand lettering.
-- render/styles/luxury.py: quiet luxury, off-white and stone, Cormorant Garamond light, slow push-in.
+- render/styles/watercolor.py: watercolor field journal, washes bleed in on paper, hand-inked lines. Figtree.
+- render/styles/luxury.py: quiet luxury, off-white and stone, Figtree light, slow push-in, lots of empty space.
+- Vox paper-collage style tried and dropped (Raj, Nov 24).
 - No "American Padel Labs" text at the top of frames (Raj, Nov 24).

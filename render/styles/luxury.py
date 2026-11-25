@@ -24,7 +24,7 @@ def dashed(a,r,frac,col):
         f=cl(frac*4-k); L=math.dist(p,q); n=0
         while n<L*f:
             e=min(L*f,n+8); hl(a,(p[0]+(q[0]-p[0])*n/L,p[1]+(q[1]-p[1])*n/L),(p[0]+(q[0]-p[0])*e/L,p[1]+(q[1]-p[1])*e/L),1,col,2); n+=16
-SER=lambda sz,w=300: font(f'cormorant-garamond-latin-{w}-normal',sz)
+SER=lambda sz,w=300: font(f'figtree-latin-{w}-normal',sz)
 def spaced(s,n=2): return (' '*0).join(c+(' '*n if c!=' ' else '  ') for c in s)
 def txt(img,s,xy,f,col,al,anchor='la'):
     if al<=0: return
@@ -46,17 +46,17 @@ def frame(i):
     z=1.0+0.10*(t/N)                     # slow, continuous push-in
     a=zoom(a,z,0.5,(CY/H))
     img=Image.fromarray(a).convert('RGBA')
-    txt(img,"N° 01      PLANNING",(W//2,190),SER(30,500),TAUPE,fade(t,0,30),'mm')
-    txt(img,"The space you need",(W//2,265),SER(86,300),CHAR,fade(t,8,45),'mm')
+    txt(img,"N° 01      PLANNING",(W//2,190),SER(26,500),TAUPE,fade(t,0,30),'mm')
+    txt(img,"The space you need",(W//2,265),SER(72,300),CHAR,fade(t,8,45),'mm')
     d=ImageDraw.Draw(img,'RGBA')
     y0=1440
     for k,(lab,val,t0) in enumerate(ROWS):
         al=fade(t,t0+40,t0+75); y=y0+k*78
         if al>0: d.line((150,y+40,930,y+40),fill=STONE2+(int(255*al),),width=1)
-        txt(img,lab,(150,y+12),SER(30,500),TAUPE,al,'lm'); txt(img,val,(930,y+12),SER(40,400),CHAR,al,'rm')
+        txt(img,lab,(150,y+12),SER(26,500),TAUPE,al,'lm'); txt(img,val,(930,y+12),SER(36,400),CHAR,al,'rm')
     al=fade(t,200,236)
-    txt(img,"48' × 81'",(W//2,1745),SER(118,300),CHAR,al,'mm')
-    txt(img,"TOTAL FOOTPRINT",(W//2,1830),SER(28,500),TAUPE,al,'mm')
+    txt(img,"48' × 81'",(W//2,1745),SER(104,300),CHAR,al,'mm')
+    txt(img,"TOTAL FOOTPRINT",(W//2,1830),SER(24,500),TAUPE,al,'mm')
     return np.array(img.convert('RGB'))
 if __name__=='__main__':
     import sys
