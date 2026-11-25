@@ -121,6 +121,7 @@ def caption(img,lines,t0,t,y=1700,alpha=1.0):
             text(img,s,(W//2,y+i*90),F('i',sz,600),fill=SLATE,anchor='mm',alpha=p,dy=(1-p)*25)
 
 def brand_tag(img,alpha=1.0):
+    return  # removed per Raj (Nov 24): no "American Padel Labs" text at the top
     text(img,"A M E R I C A N   P A D E L   L A B S",(W//2,92),F('b',38),fill=SLATE,anchor='mm',alpha=alpha)
 
 def court_top(a,t,draw=1.0,lines=1.0,alpha=1.0):
