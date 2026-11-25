@@ -13,21 +13,21 @@
   "Sunset backyard in perspective: terracotta court with glass walls on a green lawn, hills and cypress trees behind.",
   "Title: How much space does a padel court need?\nLine: Padel court dimensions, explained",
   "How much space do you need for an outdoor padel court? More than the court itself.",
-  ""
+  "Remove the sub-text Line"
  ],
  [
   "2. The court",
   "View frames",
   "Same scene, court and walls only. Dimension labels along the near end and the side.",
-  "Title: The space you need\nCaption: Regulation court: 65'7\" x 32'10\"\nSub-line: Playing area, 2,153 sq ft\nLabels: 32'10\" · 65'7\"",
+  "Title: Regulation court: 65'7\" x 32'10\"\nSub-line: Playing area, 2,153 sq ft\nLabels: 32'10\" · 65'7\"",
   "A regulation padel court plays at sixty-five feet seven by thirty-two feet ten.",
-  ""
+  "The steel structure needs to match the regulation steel structure. Its missing some panels. It should still be in illustrated format, but needs to match."
  ],
  [
   "3. Concrete pad",
   "View frames",
   "The concrete pad appears as a stone band around the court.",
-  "Title: The space you need\nCaption: Recommended concrete pad: 36' x 69'\nSub-line: Includes the perimeter concrete ring beam that anchors the court\nLabels: 36' · 69'",
+  "Title: Concrete pad: 36' x 69'\nCaption: Includes perimeter ring beam to anchor the court\nLabels: 36' · 69'",
   "But the concrete pad you build on should be thirty-six by sixty-nine feet. That includes the perimeter ring beam that anchors the court to the concrete.",
   ""
  ],
@@ -35,25 +35,25 @@
   "4. 48' x 81' total",
   "View frames",
   "A pale clearance zone with a dashed edge appears around the pad, with 6' labels.",
-  "Title: The space you need\nCaption: 48' x 81' total\nSub-line: Plus 6' clear around the pad, for install machinery and easy access in and out\nLabels: 6' · 6' · 6'",
+  "Title: Total space you need\nCaption: 48' x 81'\nSub-line: Plus around 6' around the pad, for machinery and easy access in and out\nLabels: 6' · 6' · 6'",
   "For recreational and club play, keep another six feet clear on all sides of the pad, forty-eight by eighty-one feet in total. That gives machinery room to install the court, and easy access in and out.",
-  ""
+  "Add 6’ label on bottom of court"
  ],
  [
   "5. Steel structure",
   "View frames",
   "Height line beside a corner post of the steel frame.",
-  "Title: The steel structure\nCaption: Tallest steel member: 13'1\"\nSub-line: Glass and mesh walls on a steel frame\nLabel: 13'1\"",
+  "Title: Tallest steel member: 13'1\"\nCaption: Glass and mesh walls on a steel frame\nLabel: 13'1\"",
   "The steel frame is the tallest part of the court. Its highest member stands thirteen feet one.",
-  ""
+  "The steel frame and top ball mesh panels measure 13’1"
  ],
  [
   "6. Tip 1: setback",
   "View frames",
   "Dashed yellow property line beside the clearance zone, with a short line showing the gap.",
-  "Title: Tips before you build\nCaption: 1. Check setback rules\nSub-line: They decide where on your property the court can go\nLabel: property line",
+  "Title: Tips before you build\nCaption: 1. Check your town’s setback rules\nSub-line: This decides where on your property a court can go\nLabel: property line",
   "A few tips before you build. Check your city's setback rules: how far the court has to sit from your property lines. That decides where you can place the court.",
-  "Done: setback now says it decides where the court can go. Slope tip removed (moved to Archive)."
+  "Move the setback line farther away from the court"
  ],
  [
   "7. Tip 2: orientation",
@@ -69,13 +69,13 @@
   "Four light poles with a soft glow; a utility box with a dashed line to the nearest pole.",
   "Title: Tips before you build\nCaption: 3. Want lights?\nSub-line: Plan access to your utility box\nLabel: utility box",
   "And if you want lights, plan access to your utility box early.",
-  ""
+  "Move the compass icon centered on the page under the court\n\nFor youtube, move the compass to the right of the text"
  ],
  [
   "9. CTA: permits",
   "View frames",
   "Same scene, calm hold.",
-  "Title: Will a court fit your property?\nCaption: Permit rules vary by county and city\nSub-line: Plan early to avoid costly redesigns",
+  "Title: Permit rules vary by city or county\nCaption: We plan this early to avoid costly redesigns",
   "Padel courts can count as structures or fence installations, and permit requirements vary by county and city. Planning for them early avoids costly redesigns later.",
   ""
  ],
@@ -83,9 +83,9 @@
   "10. CTA: we help",
   "View frames",
   "White APL logo in the sky above the text.",
-  "Logo: American Padel Labs (logo image)\nCaption: We'll help you navigate and plan your home court\nLine 1: Free court-fit assessment\nLine 2: americanpadellabs.com",
+  "Title: Get a free court-fit assessment\nCaption: americanpadellabs.com",
   "We can help you navigate and plan your court for your home. Get a free court-fit assessment at americanpadellabs.com.",
-  "Done: removed the club line."
+  "I think we need a small American Padel Labs logo watermark on bottom right of all screens"
  ],
  [
   "Archive",

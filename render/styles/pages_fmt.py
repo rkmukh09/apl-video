@@ -7,14 +7,15 @@ ROOT=os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FMTS={
  # safe = (x0,y0,x1,y1) where text may go; text: where the caption block sits
  'reel':  dict(W=1080,H=1920,safe=(65,270,960,1248),hz=800, ct=870, cb=1650,cx=512, fw=215,nw=480,text='top'),
- 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=430, ct=470, cb=1010,cx=540, fw=200,nw=440,text='bottom'),
- 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=300, ct=330, cb=730, cx=540, fw=150,nw=330,text='bottom'),
+ 'feed':  dict(W=1080,H=1350,safe=(60,60,1020,1290),hz=370, ct=400, cb=860, cx=540, fw=170,nw=380,text='bottom'),
+ 'square':dict(W=1080,H=1080,safe=(60,60,1020,1020),hz=250, ct=280, cb=630, cx=540, fw=130,nw=290,text='bottom'),
  'wide':  dict(W=1920,H=1080,safe=(96,60,1824,1020),hz=420, ct=455, cb=1000,cx=1340,fw=200,nw=470,text='left'),
 }
 FMT=os.environ.get('FMT','reel'); C=FMTS[FMT]; W,H=C['W'],C['H']
 FT=dict(COURT=(32+10/12,65+7/12),PAD=(36.0,69.0),ACC=(48.0,81.0)); SV=22+10/12
 COURT,PAD,ACC=FT['COURT'],FT['PAD'],FT['ACC']
 TERRA=(184,92,62)
+LOGO=Image.open(os.path.join(ROOT,'brand','logo.png')).convert('RGBA')
 rng=np.random.default_rng(21)
 _f={}
 def F(sz,w=800):
@@ -86,18 +87,57 @@ def court(a,pad=True,clear=False):
         cv2.polylines(a,[np.int32(ln*4)],k==0,(250,244,232),4,cv2.LINE_AA,shift=2)
     return a
 def walls(a):
-    w,l=COURT; hw,hl=w/2,l/2; G=6+7/12; T=9+10/12
-    def quad(p0,p1,h0,h1,al):
+    # Regulation enclosure (live article + Raj): back walls 6'7" glass with mesh above; the back corners and the
+    # top ball-mesh panels reach 13'1" (4 m); side walls step down to 6'7" toward the net (glass, then mesh).
+    w,l=COURT; hw,hl=w/2,l/2; G=6+7/12; TOP=13+1/12; M2=6.5617
+    def quad(p0,p1,h0,h1,kind):
         pts=np.float32([P([p0])[0],P([p1])[0],up(*p1,h1),up(*p0,h0)])
-        o=a.copy(); cv2.fillPoly(o,[np.int32(pts)],(200,225,240),cv2.LINE_AA); a[:]=a*(1-al)+o*al
-        cv2.polylines(a,[np.int32(pts)],True,(235,240,245),2,cv2.LINE_AA)
-    quad((-hw,-hl),(hw,-hl),G,G,0.28)
-    for x in (-hw,hw):
-        quad((x,-hl),(x,-hl+6.56),T,T,0.22); quad((x,-hl+6.56),(x,-hl+13.1),G,G,0.22)
-        quad((x,hl-13.1),(x,hl-6.56),G,G,0.22); quad((x,hl-6.56),(x,hl),T,T,0.22)
-    quad((-hw,hl),(hw,hl),G,G,0.22)
-    for x,y in [(-hw,-hl),(hw,-hl),(-hw,hl),(hw,hl)]:
-        b=P([(x,y)])[0]; t=up(x,y,13+1/12); cv2.line(a,(int(b[0]),int(b[1])),(int(t[0]),int(t[1])),(52,56,64),5,cv2.LINE_AA)
+        o=a.copy()
+        if kind=='glass':
+            cv2.fillPoly(o,[np.int32(pts)],(200,225,240),cv2.LINE_AA); a[:]=a*0.75+o*0.25
+            cv2.polylines(a,[np.int32(pts)],True,(235,240,245),2,cv2.LINE_AA)
+        else:
+            cv2.fillPoly(o,[np.int32(pts)],(70,76,86),cv2.LINE_AA); a[:]=a*0.88+o*0.12
+            n=max(2,int(abs(np.linalg.norm(np.array(p1)-np.array(p0)))/1.6))
+            for k in range(1,n):
+                t=k/n; q=(p0[0]+(p1[0]-p0[0])*t,p0[1]+(p1[1]-p0[1])*t); b0=P([q])[0]; b1=up(*q,h0)
+                cv2.line(a,(int(b0[0]),int(b0[1]-(0 if h0==h1 else 0))),(int(b1[0]),int(b1[1])),(60,66,76),1,cv2.LINE_AA)
+            for hh in np.arange(1.6,max(h0,h1),1.6):
+                b0=up(*p0,hh); b1=up(*p1,hh); cv2.line(a,(int(b0[0]),int(b0[1])),(int(b1[0]),int(b1[1])),(60,66,76),1,cv2.LINE_AA)
+    def wall(p0,p1,lo,hi,kind): 
+        # lo..hi vertical band: draw as quad from base offset lo up to hi
+        pts0=up(*p0,lo); pts1=up(*p1,lo)
+        if kind=='glass': quad(p0,p1,hi,hi,'glass') if lo==0 else None
+    def band(p0,p1,lo,hi,kind):
+        b=[up(*p0,lo),up(*p1,lo),up(*p1,hi),up(*p0,hi)]
+        o=a.copy(); col=(200,225,240) if kind=='glass' else (70,76,86); al=0.25 if kind=='glass' else 0.12
+        cv2.fillPoly(o,[np.int32(b)],col,cv2.LINE_AA); a[:]=a*(1-al)+o*al
+        if kind=='glass': cv2.polylines(a,[np.int32(b)],True,(235,240,245),2,cv2.LINE_AA)
+        else:
+            L=abs(p1[0]-p0[0])+abs(p1[1]-p0[1]); n=max(2,int(L/1.4))
+            for k in range(0,n+1):
+                t=k/n; q=(p0[0]+(p1[0]-p0[0])*t,p0[1]+(p1[1]-p0[1])*t); u0=up(*q,lo); u1=up(*q,hi)
+                cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),(64,70,80),1,cv2.LINE_AA)
+            for hh in np.arange(lo,hi+0.01,1.4):
+                u0=up(*p0,hh); u1=up(*p1,hh); cv2.line(a,(int(u0[0]),int(u0[1])),(int(u1[0]),int(u1[1])),(64,70,80),1,cv2.LINE_AA)
+            cv2.polylines(a,[np.int32(b)],True,(60,64,72),2,cv2.LINE_AA)
+    def post(x,y,h):
+        b=P([(x,y)])[0]; t=up(x,y,h); cv2.line(a,(int(b[0]),int(b[1])),(int(t[0]),int(t[1])),(52,56,64),4,cv2.LINE_AA)
+    def back(y):
+        band((-hw,y),(hw,y),0,G,'glass'); band((-hw,y),(hw,y),G,TOP,'mesh')
+        for x in np.linspace(-hw,hw,6): post(x,y,TOP)
+    def side(x,sgn):
+        # from the far back (y=-hl) toward the net, then from the net to the near back (y=+hl)
+        for end in (-1,1):
+            y0=end*hl; d=-end
+            band((x,y0),(x,y0+d*M2),0,G,'glass'); band((x,y0),(x,y0+d*M2),G,TOP,'mesh')
+            band((x,y0+d*M2),(x,y0+d*2*M2),0,G,'glass')
+            band((x,y0+d*2*M2),(x,0),0,G,'mesh')
+            post(x,y0,TOP); post(x,y0+d*M2,TOP); post(x,y0+d*2*M2,G)
+        post(x,0,G)
+    back(-hl)
+    for x in (-hw,hw): side(x,1)
+    back(hl)
     return a
 def finish(a):
     a=a*(1+0.045*STREAK[...,None]); sp=(STIP<0.035)[...,None]; a=np.where(sp,a*0.86+255*0.14,a)
@@ -141,49 +181,55 @@ def textblock(d,title,big,small,top=0):
     elif C['text']=='bottom':
         stack(ttl,y0+10+top)
         hb=sum(f.size*1.25 for _,f in bg)+sum(f.size*1.25 for _,f in sl)+6
-        y=stack(bg,y1-hb); stack(sl,y+6)
+        y=stack(bg,y1-hb-int(110*SC)); stack(sl,y+6)
     else:
         tot=sum(f.size*1.25 for _,f in ttl+bg+sl)+60
         y=stack(ttl,max(y0+top,(y0+y1)/2-tot/2)); y=stack(bg,y+40); stack(sl,y+6)
 def page(a,title,big,small=None,extra=None,top=0):
     img=Image.fromarray(finish(a)).convert('RGBA'); d=ImageDraw.Draw(img,'RGBA')
     if extra: extra(img,d)
-    textblock(d,title,big,small,top); return img
+    textblock(d,title,big,small,top)
+    x0,y0,x1,y1=C['safe']; h=int(100*SC) if FMT!='wide' else 90
+    lg=LOGO.resize((int(LOGO.width*h/LOGO.height),h),Image.LANCZOS); al=lg.getchannel('A').point(lambda v:int(v*0.85)); lg.putalpha(al)
+    img.alpha_composite(lg,(int(x1-lg.width),int(y1-lg.height)))
+    return img
 def lbl(d,s,xy,size=40): stxt(d,s,xy,F(max(22,int(size*SC))))
 w,l=COURT
-def pg_hook(): return page(walls(court(scene(),pad=False)),"How much space does a padel court need?",None,"Padel court dimensions, explained")
+def pg_hook(): return page(walls(court(scene(),pad=False)),"How much space does a padel court need?",None,None)
 def pg_court():
     def ex(img,d):
         p=P([(-w/2,l/2+3),(w/2,l/2+3)]); lbl(d,"32'10\"",tuple(p.mean(0)+[0,20*SC]))
         q=P([(w/2+4,-l/2),(w/2+4,l/2)]); lbl(d,"65'7\"",tuple(q.mean(0)+[55*SC,0]))
-    return page(walls(court(scene(),pad=False)),"The space you need","Regulation court: 65'7\" x 32'10\"","Playing area, 2,153 sq ft",ex)
+    return page(walls(court(scene(),pad=False)),"Regulation court: 65'7\" x 32'10\"",None,"Playing area, 2,153 sq ft",ex)
 def pg_pad():
     def ex(img,d):
         p=P([(-PAD[0]/2,PAD[1]/2+3),(PAD[0]/2,PAD[1]/2+3)]); lbl(d,"36'",tuple(p.mean(0)+[0,22*SC]))
         q=P([(PAD[0]/2+4,-PAD[1]/2),(PAD[0]/2+4,PAD[1]/2)]); lbl(d,"69'",tuple(q.mean(0)+[50*SC,0]))
-    return page(walls(court(scene())),"The space you need","Recommended concrete pad: 36' x 69'","Includes the perimeter concrete ring beam that anchors the court",ex)
+    return page(walls(court(scene())),"Concrete pad: 36' x 69'","Includes perimeter ring beam to anchor the court",None,ex)
 def pg_total():
     a=walls(court(scene(),clear=True)); dashed(a,R(*ACC))
     def ex(img,d):
-        for p in [((ACC[0]+PAD[0])/4,0),(-(ACC[0]+PAD[0])/4,0),(0,-(ACC[1]+PAD[1])/4)]: lbl(d,"6'",tuple(P([p])[0]),36)
-    return page(a,"The space you need","48' x 81' total","Plus 6' clear around the pad, for install machinery and easy access in and out",ex)
+        for p in [((ACC[0]+PAD[0])/4,0),(-(ACC[0]+PAD[0])/4,0),(0,-(ACC[1]+PAD[1])/4),(0,(ACC[1]+PAD[1])/4)]: lbl(d,"6'",tuple(P([p])[0]),36)
+    return page(a,"Total space you need","48' x 81'","Plus around 6' around the pad, for machinery and easy access in and out",ex)
 def pg_steel():
     def ex(img,d):
         x,y=w/2,l/2; b=P([(x,y)])[0]; t=up(x,y,13+1/12); dx=50*SC
         d.line((b[0]+dx,b[1],t[0]+dx,t[1]),fill=(255,255,255,255),width=5)
         for p in (b,t): d.line((p[0]+dx-16,p[1],p[0]+dx+16,p[1]),fill=(255,255,255,255),width=5)
         stxt(d,"13'1\"",(t[0]+dx+18,(b[1]+t[1])/2),F(int(58*SC)),anchor='lm')
-    return page(walls(court(scene())),"The steel structure","Tallest steel member: 13'1\"","Glass and mesh walls on a steel frame",ex)
+    return page(walls(court(scene())),"Tallest steel member: 13'1\"","Glass and mesh walls on a steel frame",None,ex)
 def pg_setback():
-    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=ACC[0]/2+9
+    a=walls(court(scene(),clear=True)); dashed(a,R(*ACC)); xl=ACC[0]/2+17
     dashed(a,P([(xl,-ACC[1]/2-4),(xl,ACC[1]/2+2)]),closed=False,col=(255,236,150),seg=18,th=5)
     def ex(img,d):
-        p0=P([(ACC[0]/2,8)])[0]; p1=P([(xl,8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
-        lbl(d,"property line",tuple(P([(xl,-ACC[1]/2-4)])[0]+[-20*SC,-30*SC]),28)
-    return page(a,"Tips before you build","1. Check setback rules","They decide where on your property the court can go",ex)
+        p0=P([(ACC[0]/2,-8)])[0]; p1=P([(xl,-8)])[0]; d.line((p0[0],p0[1],p1[0],p1[1]),fill=(255,255,255,255),width=4)
+        pp=P([(xl,-ACC[1]/2+2)])[0]; lbl(d,"property line",(min(pp[0],W-120*SC),pp[1]-30*SC),28)
+    return page(a,"Tips before you build","1. Check your town’s setback rules","This decides where on your property a court can go",ex)
 def pg_orient():
     def ex(img,d):
-        nb=P([(-ACC[0]/2-6,ACC[1]/2-6)])[0]; r=60*SC; cx=max(nb[0],C['safe'][0]+r+10); cy=min(nb[1],H-r-60)
+        r=60*SC
+        if FMT=='wide': cx,cy=C['safe'][0]+640+110,H*0.5
+        else: cb=P([(0,COURT[1]/2+4.5)])[0][1]; cx=C['cx']; cy=cb+r+40*SC
         d.ellipse((cx-r,cy-r,cx+r,cy+r),outline=(255,255,255,255),width=4)
         d.polygon([(cx,cy-r+8),(cx-16,cy),(cx+16,cy)],fill=TERRA+(255,)); d.polygon([(cx,cy+r-8),(cx-16,cy),(cx+16,cy)],fill=(255,255,255,255))
         stxt(d,"N",(cx,cy-r-26*SC),F(int(36*SC))); stxt(d,"S",(cx,cy+r+26*SC),F(int(36*SC)))
@@ -206,17 +252,8 @@ def pg_lights():
     pl=P([poles[3]])[0]; dashed(a,[(ub[0]-26*s,ub[1]-10),(pl[0],pl[1])],closed=False,col=(255,236,150),seg=14,th=4)
     def ex(img,d): lbl(d,"utility box",(ub[0],ub[1]+28*SC),28)
     return page(a,"Tips before you build","3. Want lights?","Plan access to your utility box",ex)
-def pg_cta1(): return page(walls(court(scene())),"Will a court fit your property?","Permit rules vary by county and city","Plan early to avoid costly redesigns")
-LOGO=Image.open(os.path.join(ROOT,'brand','logo.png')).convert('RGBA')
-def pg_cta2():
-    def ex(img,d):
-        x0,y0,x1,y1=C['safe']; h=int(230*SC)
-        lg=LOGO.resize((int(LOGO.width*h/LOGO.height),h),Image.LANCZOS)
-        cx=(x0+x1)/2 if FMT!='wide' else x0+320
-        ly=y0+10 if C['text']!='left' else 90
-        img.alpha_composite(lg,(int(cx-lg.width/2),int(ly)))
-    top={'reel':int(250),'wide':300}.get(FMT,0)
-    return page(walls(court(scene())),[],"We'll help you navigate and plan your home court",["Free court-fit assessment","americanpadellabs.com"],ex,top=top)
+def pg_cta1(): return page(walls(court(scene())),"Permit rules vary by city or county","We plan this early to avoid costly redesigns")
+def pg_cta2(): return page(walls(court(scene())),"Get a free court-fit assessment","americanpadellabs.com")
 PAGES={'01_hook':pg_hook,'02_court':pg_court,'03_pad':pg_pad,'04_total':pg_total,'05_steel':pg_steel,'06_setback':pg_setback,
        '07_orientation':pg_orient,'09_lights':pg_lights,'10_cta_permits':pg_cta1,'11_cta_help':pg_cta2}
 if __name__=='__main__':
