@@ -32,5 +32,8 @@ Sources: americanpadellabs.com (Nov 2026) and instagram.com/americanpadellabs (v
 - render/styles/watercolor.py: watercolor field journal, washes bleed in on paper, hand-inked lines. Figtree.
 - render/styles/luxury.py: quiet luxury, off-white and stone, Figtree light, slow push-in, lots of empty space.
 - render/styles/clean3d.py: clean 3D render, minimal court rotates while parts get labeled (turf, sand infill, glass, mesh, lights). Figtree.
-- Vox paper-collage style tried and dropped (Raj, Nov 24).
+- render/styles/hybrid.py: real footage on watercolor paper; freeze frames get ink circles, arrows, yellow highlights; numbers cut to a quick watercolor chart.
+- render/styles/polaroid.py: instant-film scrapbook, Polaroids drop onto corkboard with a bounce, slow pan.
+- Vox paper collage: Raj asked for it again as an option (Nov 24); renderer lives in git history (57f0575).
+- Chosen for the dimensions video: clean 3D (render/styles/dims3d.py), Nov 24.
 - No "American Padel Labs" text at the top of frames (Raj, Nov 24).
